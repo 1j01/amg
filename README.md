@@ -5,4 +5,4 @@ An abstracted modular game framework (AMG/AMGF) with integrated pixel editor and
 
 so, like,
 =========
-I am dead seriously sarcastic. Deal with it.
+I am dead seriously sarcastic about this. Deal with it.
