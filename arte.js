@@ -1,0 +1,4 @@
+
+ArtEditor = function(){
+	
+};

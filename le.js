@@ -1,0 +1,4 @@
+
+LevelEditor = function(){
+	
+};
