@@ -54,3 +54,5 @@
 	}
 	
 //})();
+
+var px = new PixelEditor(0, gui);
