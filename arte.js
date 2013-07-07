@@ -1,5 +1,6 @@
 
 // Manages tilesets, opens the pixel editor.
+//ctx.drawImage(img, sX, sY, sW, sH, X, Y, W, H);
 ArtManager = function(assets, gui){
 	this.assets = assets;
 	this.show = function(){
