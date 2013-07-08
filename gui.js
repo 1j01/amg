@@ -204,13 +204,19 @@ function Modal(_gui){
 	
 	this.$=function(q,f){
 		q=this.$m.querySelector(q);
-		if(f)f(q);
+		if(f){
+			f(q);
+			return this;
+		}
 		return q;
 	};
 	this.$$=function(q,f){
 		q=this.$m.querySelectorAll(q);
-		if(f)for(i=0;i<q.length;i++){
-			f(q[i]);
+		if(f){
+			for(i=0;i<q.length;i++){
+				f(q[i]);
+			}
+			return this;
 		}
 		return q;
 	};

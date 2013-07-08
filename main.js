@@ -53,6 +53,36 @@
 		*/
 	}
 	
+	var mainScreen = null;
+	var mainScreenTurnOn = function(){
+		mainScreen = gui.M()
+			.title("Controls")
+			.content(
+				"<button id='open-assets-manager'>open-assets-manager</button>"+
+			"<br><button id='open-pixel-editor'>open-pixel-editor</button>"
+			).$("#open-assets-manager",function($e){
+				$e.onclick = function(e){
+					arte.show();
+				}
+			}).$("#open-pixel-editor",function($e){
+				$e.onclick = function(e){
+					new PixelEditor(gui);
+				}
+			});
+	};
+	var mainScreenTurnOff = function(){
+		mainScreen.close();
+		mainScreen=false;
+	};
+	addEventListener('keydown',function(e){
+		if(e.keyCode===27){
+			if(mainScreen){
+				mainScreenTurnOff();
+			}else{
+				mainScreenTurnOn();
+			}
+		}
+	});
 //})();
 
-var px = new PixelEditor(0, gui);
+var px = new PixelEditor(gui);

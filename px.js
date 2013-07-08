@@ -1,100 +1,104 @@
 
 // It's a pixel editor.
-PixelEditor = function(img, gui){
-	var ed = this;
-	ed.tilesetmode = false;
-	ed.tool = "Paint";
-	ed.color = "rgb(203,219,252)";
-	ed.canvas = document.createElement("canvas");
+PixelEditor = function(gui, img){
+	//var 
+	PE = this;
+	PE.tilesetmode = false;
+	PE.tool = "Paint";
+	PE.color = "rgb(203,219,252)";
+	PE.canvas = document.createElement("canvas");
 	
 	if(!img){
-		ed.img = document.createElement("img");
-		ed.img.width = 128;
-		ed.img.height = 128;
+		PE.img = document.createElement("img");
+		PE.img.width = 128;
+		PE.img.height = 128;
 	}else{
-		ed.img = img;
+		PE.img = img;
 	}
-	ed.canvas.width = ed.img.width;
-	ed.canvas.height = ed.img.height;
-	ed.ctx=ed.canvas.getContext("2d");
-	ed.ctx.drawImage(ed.img,0,0);
-	ed.view = {
+	PE.canvas.width = PE.img.width;
+	PE.canvas.height = PE.img.height;
+	PE.ctx=PE.canvas.getContext("2d");
+	PE.ctx.webkitImageSmoothingEnabled=false;
+	PE.ctx.mozImageSmoothingEnabled=false;
+	PE.ctx.drawImage(PE.img,0,0);
+	PE.view = {
 		scale: 1,
-		x: ed.canvas.width/2,
-		y: ed.canvas.height/2,
+		x: PE.canvas.width/2,
+		y: PE.canvas.height/2,
 	};
 	
-	ed.m = gui.M();
-	ed.m.title("Pixel Editor");
-	ed.m.$c.style.width=128*4+"px";
-	ed.m.$c.style.height=128*4+"px";
-	ed.m.position("center-top");
-	/*
-		draw: function(){
-			var x=ed.ctx;
-			if(ed.tool==="paint"){
-				if(ed.m.mouse.left){
-					x.beginPath();
-					var mx1=cx(ed.m.mouse.prev.x),my1=cy(ed.m.mouse.prev.y);
-					var mx2=cx(ed.m.mouse.x),my2=cy(ed.m.mouse.y);
-					console.log(mx2,my2);
-					//var seded=
-					x.moveTo(mx1,my1);
-					x.lineTo(mx2,my2);
-					x.lineWidth=1;
-					x.strokeStyle=ed.color;
-					x.stroke();
-					ed.img.src=ed.canvas.toDataURL("image/png");
-				}
+	PE.m = gui.M();
+	PE.m.title("Pixel Editor");
+	PE.m.$c.style.width=128*4+"px";
+	PE.m.$c.style.height=128*4+"px";
+	PE.m.$c.style.overflow="hidden";
+	PE.m.position("center-top");
+	PE.m.$c.appendChild(PE.canvas);
+	PE.m.mouse={
+		left:false,right:false,
+	};
+	PE.m.$c.addEventListener("mousedown",function(e){
+		if(e.button){
+			PE.m.mouse.right=true;
+		}else{
+			PE.m.mouse.left=true;
+		}
+	});
+	addEventListener("mouseup",function(e){
+		if(e.button){
+			PE.m.mouse.right=false;
+		}else{
+			PE.m.mouse.left=false;
+		}
+	});
+	PE.m.$c.addEventListener("mousemove",function(e){
+		PE.m.mouse.prev={x:PE.m.mouse.x,y:PE.m.mouse.y,left:PE.m.mouse.left,right:PE.m.mouse.right};
+		var rect=PE.canvas.getBoundingClientRect();
+		PE.m.mouse.x=e.clientX-rect.left;
+		PE.m.mouse.y=e.clientY-rect.top;
+		
+		var x=PE.ctx;
+		if(PE.tool==="Paint"){
+			if(PE.m.mouse.left){
+				x.beginPath();
+				var mx1=cx(PE.m.mouse.prev.x),my1=cy(PE.m.mouse.prev.y);
+				var mx2=cx(PE.m.mouse.x),my2=cy(PE.m.mouse.y);
+				console.log(mx2,my2);
+				//var seded=
+				x.moveTo(mx1,my1);
+				x.lineTo(mx2,my2);
+				//x.lineWidth=2;
+				x.strokeStyle=PE.color;
+				x.stroke();
+				PE.img.src=PE.canvas.toDataURL("image/png");
 			}
-			function cx(mx){
-				//return (mx+ed.m.w)/ed.view.scale-ed.view.x;
-				return (mx-ed.m.w/4)/ed.view.scale;
-				//return (mx-ed.m.w+ed.view.x/4)/ed.view.scale;
-			}
-			function cy(my){
-				//return (my+ed.m.h)/ed.view.scale-ed.view.y;
-				return (my-ed.m.h/4)/ed.view.scale;
-				//return (my-ed.m.h+ed.view.y/4)/ed.view.scale;
-			}
-			
-			x=this.ctx;
-			x.save();
-			x.clearRect(0,0,this.w,this.h);
-			x.fillStyle="rgba(255,255,255,0.1)";
-			x.fillRect(0,0,this.w,this.h);
-			x.fillStyle="#rgba(255,255,255,1)";
-			x.textBaseline="bottom";
-			x.textAlign="right";
-			x.fillText(ed.view.scale*100+"%",ed.m.w,ed.m.h);
-			x.translate(ed.m.w/2,ed.m.h/2);
-			x.scale(ed.view.scale, ed.view.scale);
-			x.translate(-ed.view.x,-ed.view.y);
-			x.strokeStyle="rgba(255,255,255,0.2)";
-			x.strokeRect(-2,-2,ed.canvas.width+4,ed.canvas.height+4);
-			x.drawImage(ed.canvas,0,0);
-			x.restore();
-			
-		},
-	});*/
+		}
+	});
+	function cx(mx){
+		return mx/PE.view.scale;
+	}
+	function cy(my){
+		return my/PE.view.scale;
+	}
 	
-	ed.tb=gui.M();
-	ed.tb.title("Tools");
-	ed.tb.position("left");
-	ed.tb.closeable(false);
-	ed.tools=[
+	PE.tb=gui.M();
+	PE.tb.title("Tools");
+	PE.tb.position("left");
+	PE.tb.closeable(false);
+	PE.tools=[
 		"Paint",
 		"Fill",
 		"Select",
+		"Tile",
 	];
-	for(var i=0;i<ed.tools.length;i++){
-		var c=ed.tools[i];
+	for(var i=0;i<PE.tools.length;i++){
+		var c=PE.tools[i];
 		var $tool = document.createElement("tool");
-		ed.tb.$c.appendChild($tool);
+		PE.tb.$c.appendChild($tool);
 		$tool.tool=c;
-		if(ed.tool===$tool.tool){
-			ed.tb.$tool=$tool;
-			ed.tb.$tool.style.boxShadow="0 0 2px 1px black inset, 0 0 1px 3px white inset";
+		if(PE.tool===$tool.tool){
+			PE.tb.$tool=$tool;
+			PE.tb.$tool.style.boxShadow="0 0 2px 1px black inset, 0 0 1px 3px white inset";
 		}
 		$tool.innerText=c;
 		//$tool.style.width="30px";
@@ -102,21 +106,21 @@ PixelEditor = function(img, gui){
 		$tool.style.display="block";
 		$tool.style.padding="5px";
 		$tool.onclick=function(){
-			ed.tool=this.tool;
-			if(ed.tb.$tool){
-				ed.tb.$tool.style.boxShadow="";
+			PE.tool=this.tool;
+			if(PE.tb.$tool){
+				PE.tb.$tool.style.boxShadow="";
 			}else{
 				throw new Error("Tool name incorrect...");
 			}
-			ed.tb.$tool=this;
-			ed.tb.$tool.style.boxShadow="0 0 2px 1px black inset, 0 0 1px 3px white inset";
+			PE.tb.$tool=this;
+			PE.tb.$tool.style.boxShadow="0 0 2px 1px black inset, 0 0 1px 3px white inset";
 		};
 	}
-	ed.pal=gui.M();
-	ed.pal.title("Palette");
-	ed.pal.position("bottom left");
-	ed.pal.closeable(false);
-	ed.colors=[
+	PE.pal=gui.M();
+	PE.pal.title("Palette");
+	PE.pal.position("bottom left");
+	PE.pal.closeable(false);
+	PE.colors=[
 		"rgb(0,0,0)",
 		"rgb(34,32,52)",
 		"rgb(69,40,60)",
@@ -150,36 +154,47 @@ PixelEditor = function(img, gui){
 		"rgb(143,151,74)",
 		"rgb(138,111,48)"
 	];
-	for(var i=0;i<ed.colors.length;i++){
-		var c=ed.colors[i];
+	for(var i=0;i<PE.colors.length;i++){
+		var c=PE.colors[i];
 		var $color = document.createElement("color");
-		ed.pal.$c.appendChild($color);
+		PE.pal.$c.appendChild($color);
 		$color.color=c;
-		if(ed.color===$color.color){
-			ed.pal.$color=$color;
-			ed.pal.$color.style.boxShadow="0 0 2px 1px black inset, 0 0 1px 3px white inset";
+		if(PE.color===$color.color){
+			PE.pal.$color=$color;
+			PE.pal.$color.style.boxShadow="0 0 2px 1px black inset, 0 0 1px 3px white inset";
 		}
 		$color.style.backgroundColor=c;
 		$color.style.width="30px";
 		$color.style.height="30px";
 		$color.style.display="inline-block";
 		$color.onclick=function(){
-			ed.color=this.color;
-			ed.pal.$color.style.boxShadow="";
-			ed.pal.$color=this;
-			ed.pal.$color.style.boxShadow="0 0 2px 1px black inset, 0 0 1px 3px white inset";
+			PE.color=this.color;
+			PE.pal.$color.style.boxShadow="";
+			PE.pal.$color=this;
+			PE.pal.$color.style.boxShadow="0 0 2px 1px black inset, 0 0 1px 3px white inset";
 		};
 	}
-	ed.m.$c.addEventListener("mousewheel",function(e){
+	PE.m.$c.addEventListener("mousewheel",function(e){
 		if(e.wheelDelta>0){
-			ed.view.scale++;
+			PE.view.scale++;
 		}else{
-			ed.view.scale--;
+			PE.view.scale--;
 		}
-		ed.view.scale=Math.min(10,Math.max(1,ed.view.scale));
+		PE.view.scale=Math.min(10,Math.max(1,PE.view.scale));
+		PE.canvas.style.width=PE.canvas.width*PE.view.scale+"px";
+		PE.canvas.style.height=PE.canvas.height*PE.view.scale+"px";
+		/*PE.canvas.style.transform="scale("+PE.view.scale+")";
+		PE.canvas.style.oTransform="scale("+PE.view.scale+")";
+		PE.canvas.style.mozTransform="scale("+PE.view.scale+")";
+		PE.canvas.style.webkitTransform="scale("+PE.view.scale+")";*/
 	});
-	ed.close = function(){
-		ed.m = ed.m && ed.m.close();
+	PE.close = function(){
+		PE.m.close(true);
+	};
+	PE.m.onclose = function(){
+		PE.tb.close();
+		PE.pal.close();
+		return true;
 	};
 };
 
