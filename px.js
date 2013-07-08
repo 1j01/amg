@@ -6,6 +6,7 @@ PixelEditor = function(gui, img){
 	PE.tilesetmode = false;
 	PE.tool = "Paint";
 	PE.color = "rgb(203,219,252)";
+	PE.ocanvas = document.createElement("canvas");
 	PE.canvas = document.createElement("canvas");
 	
 	if(!img){
@@ -15,17 +16,24 @@ PixelEditor = function(gui, img){
 	}else{
 		PE.img = img;
 	}
-	PE.canvas.width = PE.img.width;
-	PE.canvas.height = PE.img.height;
+	PE.ocanvas.width = PE.img.width;
+	PE.ocanvas.height = PE.img.height;
+	PE.canvas.width = PE.img.width * 10;
+	PE.canvas.height = PE.img.height * 10;
 	PE.ctx=PE.canvas.getContext("2d");
+	PE.octx=PE.ocanvas.getContext("2d");
+	PE.ctx.imageSmoothingEnabled=false;
 	PE.ctx.webkitImageSmoothingEnabled=false;
 	PE.ctx.mozImageSmoothingEnabled=false;
-	PE.ctx.drawImage(PE.img,0,0);
+	PE.octx.drawImage(PE.img,0,0);
+	//PE.ctx.drawImage(PE.img,0,0,PE.canvas.width,PE.canvas.height);
 	PE.view = {
 		scale: 1,
 		x: PE.canvas.width/2,
 		y: PE.canvas.height/2,
 	};
+	PE.canvas.style.width=PE.ocanvas.width*PE.view.scale+"px";
+	PE.canvas.style.height=PE.ocanvas.height*PE.view.scale+"px";
 	
 	PE.m = gui.M();
 	PE.m.title("Pixel Editor");
@@ -51,13 +59,13 @@ PixelEditor = function(gui, img){
 			PE.m.mouse.left=false;
 		}
 	});
-	PE.m.$c.addEventListener("mousemove",function(e){
+	addEventListener("mousemove",function(e){
 		PE.m.mouse.prev={x:PE.m.mouse.x,y:PE.m.mouse.y,left:PE.m.mouse.left,right:PE.m.mouse.right};
 		var rect=PE.canvas.getBoundingClientRect();
 		PE.m.mouse.x=e.clientX-rect.left;
 		PE.m.mouse.y=e.clientY-rect.top;
 		
-		var x=PE.ctx;
+		var x=PE.octx;
 		if(PE.tool==="Paint"){
 			if(PE.m.mouse.left){
 				x.beginPath();
@@ -73,6 +81,8 @@ PixelEditor = function(gui, img){
 				PE.img.src=PE.canvas.toDataURL("image/png");
 			}
 		}
+		PE.ctx.clearRect(0,0,PE.canvas.width,PE.canvas.height);
+		PE.ctx.drawImage(PE.ocanvas,0,0,PE.canvas.width,PE.canvas.height);
 	});
 	function cx(mx){
 		return mx/PE.view.scale;
@@ -181,8 +191,8 @@ PixelEditor = function(gui, img){
 			PE.view.scale--;
 		}
 		PE.view.scale=Math.min(10,Math.max(1,PE.view.scale));
-		PE.canvas.style.width=PE.canvas.width*PE.view.scale+"px";
-		PE.canvas.style.height=PE.canvas.height*PE.view.scale+"px";
+		PE.canvas.style.width=PE.ocanvas.width*PE.view.scale+"px";
+		PE.canvas.style.height=PE.ocanvas.height*PE.view.scale+"px";
 		/*PE.canvas.style.transform="scale("+PE.view.scale+")";
 		PE.canvas.style.oTransform="scale("+PE.view.scale+")";
 		PE.canvas.style.mozTransform="scale("+PE.view.scale+")";
