@@ -11,7 +11,7 @@
 	var arte = new ArtManager(arts, gui);
 	
 	var u = new Universe();
-	var r = new Room();
+	var r = new Room("starting area");
 	u.addRoom(r);
 	
 	var le = new LevelEditor(u);
@@ -46,7 +46,7 @@
 			mainctx.fillRect((w-480)/2,(h-30)/2,480*arts.progress,30);
 		}
 		
-		gui.draw(mainctx);
+		//gui.draw(mainctx);
 		/*
 		le.update(editing);
 		game.update(editing);
