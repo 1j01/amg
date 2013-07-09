@@ -2,11 +2,11 @@
 /// Handles loading and storing of images for live editing. Also uploading.
 // #persistant
 
-ArtAssets = function(mainctx, allloaded){
+ArtAssets = function(mainctx, allloaded, update){
 	var aa=this;
 	aa.progress=0;
 	aa.images={};
-	aa.dir="content/arts/";
+	aa.dir="content/art/";
 // splitting tilesets into tiles is unnecessary. drawImage supports clipping.
 // maybe add a helper function to lookup image and draw clipped?
 	
@@ -20,13 +20,29 @@ ArtAssets = function(mainctx, allloaded){
 	};
 	
 	aa.uploadImage=function(name){
-		name=aa.dir+name;
+		var form=new FormData();
+		var img=aa.getImage(name);
+		form.append("file","img",aa.dir+name);
+		form.append("fname",aa.dir+name);
 		var x=new XMLHttpRequest();
 		x.onreadystatechange=function(){
 			console.log(x.responseText);
 		};
 		x.open("POST","upload.py");
-		x.send();
+		x.send(form);
+	};
+	aa.newImage=function(name, img){
+		var form=new FormData();
+		var fname=aa.dir+name;
+		aa.images[fname]=img;
+		form.append("file","img",fname);
+		form.append("fname",fname);
+		var x=new XMLHttpRequest();
+		x.onreadystatechange=function(){
+			console.log(x.responseText);
+		};
+		x.open("POST","upload.py");
+		x.send(form);
 	};
 	//.replace(/content\/art\//,"")
 	

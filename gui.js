@@ -105,6 +105,10 @@ function Modal(_gui){
 			}else{
 				if(x)this.x=x;
 				if(y)this.y=y;
+				this.x=Math.max(10,this.x);
+				this.y=Math.max(10,this.y);
+				this.x=Math.min(this.x,gui.element.clientWidth-70);
+				this.y=Math.min(this.y,gui.element.clientHeight-25);
 				this.$m.style.left=(this.x)+"px";
 				this.$m.style.top=(this.y)+"px";
 				this.onmove&&this.onmove();

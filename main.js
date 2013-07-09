@@ -1,4 +1,4 @@
-//(function _(_){
+(function _(_){
 	var canvas = document.querySelector("canvas");
 	var mainctx = canvas.getContext("2d");
 	addEventListener('contextmenu',function(e){return!!e.preventDefault()});
@@ -7,7 +7,7 @@
 	var editing = true;
 	var gui = new GUI();
 	
-	var aa = new ArtAssets(mainctx, whenceBeAssetsLoaded);
+	var aa = new ArtAssets(mainctx, whenceBeAssetsLoaded, whenceAnUpdateDothForsooth);
 	var am = new ArtManager(aa, gui);
 	
 	var u = new Universe();
@@ -18,7 +18,10 @@
 	var game = new Game(u);
 	
 	function whenceBeAssetsLoaded(){
-		
+		console.log("Assets loaded.");
+	}
+	function whenceAnUpdateDothForsooth(){
+		am.update();
 	}
 	
 	if(window.requestAnimationFrame){
@@ -59,15 +62,32 @@
 			.title("Controls")
 			.position("center")
 			.content(
-				"<button id='open-assets-manager'>open-assets-manager</button>"+
-			"<br><button id='open-pixel-editor'>open-pixel-editor</button>"
-			).$("#open-assets-manager",function($e){
+				"<button id='show-art-manager'>Show Art Asset Manager</button>"+
+			"<br><button id='open-pixel-editor'>Open Pixel Editor</button>"+
+			"<br><button id='about'>About</button>"
+			).$("#show-art-manager",function($e){
 				$e.onclick = function(e){
 					am.show();
 				};
 			}).$("#open-pixel-editor",function($e){
 				$e.onclick = function(e){
-					new PixelEditor(gui);
+					new PixelEditor(gui,null,function(){
+						console.log("THIS ITS DEAD");
+					});
+				};
+			}).$("#about",function($e){
+				$e.onclick = function(e){
+					var m=gui.M().title("About").position("center").content(
+						"<p>This is an abstracted modular game framework with integrated pixel editor and realtime asset manager and a level editor with dynamic block type definitions and a skeletal character animator and inverse kinematics and a game.</p>"
+						+"<p>Well, so far just a pixel editor and realtime asset manager...</p>"
+						+"<p>...</p>"
+						+"<p><a href='https://github.com/1j01/amg'>It's on github.</a></p>"
+					);
+					m.$m.style.width="500px";
+					m.$m.style.maxWidth="80vw";
+					m.$c.style.maxHeight="80vh";
+					m.$c.style.overflowY="auto";
+					m.$c.style.overflowX="auto";
 				};
 			});
 	};
@@ -84,6 +104,7 @@
 			}
 		}
 	});
-//})();
+	//var pe = new PixelEditor(gui);
+	mainScreenTurnOn();
+})();
 
-//var px = new PixelEditor(gui);
