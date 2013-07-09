@@ -154,7 +154,6 @@ PixelEditor = function(gui, img, update){
 			}
 			pe.m.mouse.left=false;
 		}
-		console.log("I'm alive.");
 	};
 	pe.mousemove = function(e){
 		//setTimeout(function(){
