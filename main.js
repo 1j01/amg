@@ -7,17 +7,17 @@
 	var editing = true;
 	var gui = new GUI();
 	
-	var arts = new ArtAssets(mainctx,assetsLoaded);
-	var arte = new ArtManager(arts, gui);
+	var aa = new ArtAssets(mainctx, whenceBeAssetsLoaded);
+	var am = new ArtManager(aa, gui);
 	
 	var u = new Universe();
-	var r = new Room("starting area");
-	u.addRoom(r);
+	var room = new Room("starting area");
+	u.addRoom(room);
 	
 	var le = new LevelEditor(u);
 	var game = new Game(u);
 	
-	function assetsLoaded(){
+	function whenceBeAssetsLoaded(){
 		
 	}
 	
@@ -35,7 +35,7 @@
 		if(canvas.height!=innerHeight) canvas.height= innerHeight;
 		mainctx.clearRect(0,0,canvas.width,canvas.height);
 		
-		if(arts.progress<1){
+		if(aa.progress<1){
 			var w=canvas.width;
 			var h=canvas.height;
 			mainctx.fillStyle="rgba(255,255,255,0.6)";
@@ -43,7 +43,7 @@
 			mainctx.fillStyle="rgba(0,0,0,0.8)";
 			mainctx.fillRect((w-490)/2,(h-40)/2,490,40);
 			mainctx.fillStyle="rgba(255,255,255,0.8)";
-			mainctx.fillRect((w-480)/2,(h-30)/2,480*arts.progress,30);
+			mainctx.fillRect((w-480)/2,(h-30)/2,480*aa.progress,30);
 		}
 		
 		//gui.draw(mainctx);
@@ -57,17 +57,18 @@
 	var mainScreenTurnOn = function(){
 		mainScreen = gui.M()
 			.title("Controls")
+			.position("center")
 			.content(
 				"<button id='open-assets-manager'>open-assets-manager</button>"+
 			"<br><button id='open-pixel-editor'>open-pixel-editor</button>"
 			).$("#open-assets-manager",function($e){
 				$e.onclick = function(e){
-					arte.show();
-				}
+					am.show();
+				};
 			}).$("#open-pixel-editor",function($e){
 				$e.onclick = function(e){
 					new PixelEditor(gui);
-				}
+				};
 			});
 	};
 	var mainScreenTurnOff = function(){
@@ -85,4 +86,4 @@
 	});
 //})();
 
-var px = new PixelEditor(gui);
+//var px = new PixelEditor(gui);

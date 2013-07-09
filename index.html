@@ -12,14 +12,20 @@
 			    image-rendering: -o-crisp-edges;
 			    image-rendering: optimize-contrast;
 			}
+			.tool:hover,.color:hover{
+				box-shadow: 0 0 2px 1px rgba(0,0,0,0.4) inset, 0 0 1px 3px rgba(255,255,255,0.4) inset;
+			}
+			.selected{
+				box-shadow: 0 0 2px 1px black inset, 0 0 1px 3px white inset !important;
+			}
 			</style>
 		<link rel="stylesheet" type="text/css" href="http://1j01.kd.io/lib/gui.css">
 	</head>
 	<body>
 		<canvas id="main"/>
 		
-		<script src="arts.js"></script>
-		<script src="arte.js"></script>
+		<script src="aa.js"></script>
+		<script src="am.js"></script>
 		<script src="px.js"></script>
 		
 		<script src="room.js"></script>

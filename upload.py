@@ -1,13 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 import cgi, os
 import cgitb; cgitb.enable()
-
-try: # Windows needs stdio set for binary mode.
-    import msvcrt
-    msvcrt.setmode (0, os.O_BINARY) # stdin  = 0
-    msvcrt.setmode (1, os.O_BINARY) # stdout = 1
-except ImportError:
-    pass
 
 form = cgi.FieldStorage()
 
@@ -30,4 +23,4 @@ Content-Type: text/html\n
 <html><body>
 <p>%s</p>
 </body></html>
-""" % (message,)
+""" % (message)
