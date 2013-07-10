@@ -2,7 +2,7 @@
 	var canvas = document.querySelector("canvas");
 	var mainctx = canvas.getContext("2d");
 	addEventListener('contextmenu',function(e){return!!e.preventDefault()});
-	addEventListener('mousedown',function(e){return!!e.preventDefault()});
+	//addEventListener('mousedown',function(e){return!!e.preventDefault()});
 	
 	var editing = true;
 	var gui = new GUI();
