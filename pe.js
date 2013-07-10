@@ -196,11 +196,12 @@ PixelEditor = function(gui, img, update){
 		}else{
 			if(pe.m.mouse.left){
 				setTimeout(function(){
+					pe.img=new Image();
 					pe.img.onload=function(){
-						update();
+						update(pe.img);
 					};
 					pe.img.src=pe.ocanvas.toDataURL("image/png");
-				},300);
+				},1);
 			}
 			pe.m.mouse.left=false;
 		}

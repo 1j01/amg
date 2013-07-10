@@ -34,6 +34,7 @@ ArtManager = function(aa, gui){
 			canvas.onclick=(function(iname){
 				return function(e){
 					new PixelEditor(gui, aa.images[iname], function(img){
+						aa.images[iname]=img;
 						am.update();
 					});
 				};
