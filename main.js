@@ -91,6 +91,10 @@
 					m.$c.style.overflowX="auto";
 				};
 			});
+		mainScreen.onclose = function(){
+			mainScreen=false;
+			return true;
+		}
 	};
 	var mainScreenTurnOff = function(){
 		mainScreen.close();
