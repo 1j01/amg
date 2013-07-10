@@ -73,6 +73,9 @@ PixelEditor = function(gui, img, update){
 	pe.canvas.style.width=pe.ocanvas.width*pe.view.scale+"px";
 	pe.canvas.style.height=pe.ocanvas.height*pe.view.scale+"px";
 	
+	pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);
+	pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
+	
 	pe.m = gui.M();
 	pe.m.title("Pixel Editor");
 	//pe.m.$c.style.width=128*4+"px";
