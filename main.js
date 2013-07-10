@@ -1,4 +1,4 @@
-(function _(_){
+//(function(_main_){
 	var canvas = document.querySelector("canvas");
 	var mainctx = canvas.getContext("2d");
 	addEventListener('contextmenu',function(e){return!!e.preventDefault()});
@@ -10,12 +10,12 @@
 	var aa = new ArtAssets(mainctx, whenceBeAssetsLoaded, whenceAnUpdateDothForsooth);
 	var am = new ArtManager(aa, gui);
 	
-	var u = new Universe();
+	var u = new Universe(mainctx);
 	var room = new Room("starting area");
 	u.addRoom(room);
 	
-	var le = new LevelEditor(u);
-	var game = new Game(u);
+	var le = new LevelEditor(u, mainctx);
+	var game = new Game(u, mainctx);
 	
 	function whenceBeAssetsLoaded(){
 		console.log("Assets loaded.");
@@ -38,6 +38,13 @@
 		if(canvas.height!=innerHeight) canvas.height= innerHeight;
 		mainctx.clearRect(0,0,canvas.width,canvas.height);
 		
+		
+		u.update(mainctx);
+		/*
+		le.update(editing);
+		game.update(editing);
+		*/
+		
 		if(aa.progress<1){
 			var w=canvas.width;
 			var h=canvas.height;
@@ -48,12 +55,6 @@
 			mainctx.fillStyle="rgba(255,255,255,0.8)";
 			mainctx.fillRect((w-480)/2,(h-30)/2,480*aa.progress,30);
 		}
-		
-		//gui.draw(mainctx);
-		/*
-		le.update(editing);
-		game.update(editing);
-		*/
 	}
 	
 	var mainScreen = null;
@@ -106,5 +107,5 @@
 	});
 	//var pe = new PixelEditor(gui);
 	mainScreenTurnOn();
-})();
+//})();
 

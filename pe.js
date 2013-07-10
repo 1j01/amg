@@ -109,35 +109,82 @@ PixelEditor = function(gui, img, update){
 			if(pe.tool==="Paint"){
 				pe.octx.fillStyle=pe.color;
 				pe.octx.fillRect(pe.m.mouse.x,pe.m.mouse.y,1,1);
+				
+				pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);
+				pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
 			}else if(pe.tool==="Fill"){
 				var _x=pe.m.mouse.x,_y=pe.m.mouse.y;
-				console.log(mx,my);
-				var id=pe.ctx.getImageData(0,0,pe.canvas.width,pe.canvas.height);
+				var id=pe.octx.getImageData(0,0,pe.canvas.width,pe.canvas.height);
 				var rgb=pe.color.match(/rgb\((\d+),(\d+),(\d+)\)/),
 					r=rgb[1],
 					g=rgb[2],
 					b=rgb[3];
-				console.log(r,g,b);
+				fill(_x,_y,r,g,b);
+				pe.octx.putImageData(id,0,0);
+				
+				pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);
+				pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
+				
+				
+				function at(x,y){
+					if(x<0)throw new Error("x<0");
+					if(y<0)throw new Error("y<0");
+					if(x>id.width)throw new Error("x>id.width");
+					if(y>id.height)throw new Error("y>id.height");
+					var i=(x%id.width+y*id.width)*4;
+					return [id.data[i],id.data[i+1],id.data[i+2],id.data[i+3]];
+				}
+				function set(x,y, r,g,b){
+					var i=(x%id.width+y*id.width)*4;
+					//console.log(i,id.data.length);
+					id.data[i+0]=r;
+					id.data[i+1]=g;
+					id.data[i+2]=b;
+					id.data[i+3]=255;
+				}
+				function eqat(x,y, r,g,b,a){
+					var i=(x%id.width+y*id.width)*4;
+					return id.data[i+3]==a
+						&& id.data[i+0]==r
+						&& id.data[i+1]==g
+						&& id.data[i+2]==b;
+				}
+				function fill(x,y, r,g,b, wr,wg,wb,wa, life){
+					if(wr===undefined){
+						var within=at(x,y);
+						var wr=within[0], wg=within[1], wb=within[2], wa=within[3];
+						console.log("fill within color",wr,wg,wb);
+						console.log("fill with color",r,g,b);
+						if(r==wr&&g==wg&&b==wb){
+							console.log("Already that color.");
+							return false;
+						}
+						var life=650;
+					}
+					if(x<0||y<0||x>=id.width||y>=id.height)return;
+					var i=(x%id.width+y*id.width)*4;
+					
+					if(id.data[i+3]==wa
+					&& id.data[i+0]==wr
+					&& id.data[i+1]==wg
+					&& id.data[i+2]==wb){
+						id.data[i+0]=r;
+						id.data[i+1]=g;
+						id.data[i+2]=b;
+						id.data[i+3]=255;
+					}else{
+						return;
+					};
+					
+					
+					if(--life){
+						if(x<id.width)fill(x+1,y, r,g,b, wr,wg,wb,wa, life);
+						if(y<id.height)fill(x,y+1, r,g,b, wr,wg,wb,wa, life);
+						if(x>0)fill(x-1,y, r,g,b, wr,wg,wb,wa, life);
+						if(y>0)fill(x,y-1, r,g,b, wr,wg,wb,wa, life);
+					}
+				}
 			}
-		}
-		function at(x,y){
-			var i=(x%y+y*id.width)*4;
-			return [id.data[i],id.data[i+1],id.data[i+2],id.data[i+3]];
-		}
-		function set(x,y,r,g,b){
-			var i=(x%y+y*id.width)*4;
-			id.data[i+0]=r;
-			id.data[i+1]=g;
-			id.data[i+2]=b;
-		}
-		function eqat(x,y,r,g,b){
-			var i=(x%y+y*id.width)*4;
-			return id.data[i+0]==r
-				&& id.data[i+1]==g
-				&& id.data[i+2]==b;
-		}
-		function fill(x,y){
-			
 		}
 	};
 	pe.mouseup = function(e){

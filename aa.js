@@ -15,14 +15,18 @@ ArtAssets = function(mainctx, allloaded, update){
 		if(aa.images[name]){
 			return aa.images[name];
 		}else{
-			alert("Image not loaded!");
+			console.error("no image!");
 		}
 	};
 	
 	aa.uploadImage=function(name){
 		var form=new FormData();
 		var img=aa.getImage(name);
-		form.append("file","img",aa.dir+name);
+		if(!aa.src.match(/^data:/)){
+			console.log("uploadImage: image not modified.");
+			
+		}
+		form.append("file",aa.src,aa.dir+name);
 		form.append("fname",aa.dir+name);
 		var x=new XMLHttpRequest();
 		x.onreadystatechange=function(){
