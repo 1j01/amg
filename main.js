@@ -19,6 +19,7 @@
 	
 	function whenceBeAssetsLoaded(){
 		console.log("Assets loaded.");
+		am.update();
 	}
 	function whenceAnUpdateDothForsooth(){
 		am.update();
@@ -27,13 +28,13 @@
 	if(window.requestAnimationFrame){
 		requestAnimationFrame(function animate(){
 			requestAnimationFrame(animate);
-			update();
+			step();
 		});
 	}else{
-		setTimeout(update,10);
+		setTimeout(step,10);
 	}
 	
-	function update(){
+	function step(){
 		if(canvas.width !=innerWidth ) canvas.width = innerWidth;
 		if(canvas.height!=innerHeight) canvas.height= innerHeight;
 		mainctx.clearRect(0,0,canvas.width,canvas.height);
@@ -94,7 +95,7 @@
 		mainScreen.onclose = function(){
 			mainScreen=false;
 			return true;
-		}
+		};
 	};
 	var mainScreenTurnOff = function(){
 		mainScreen.close();
