@@ -22,16 +22,16 @@ ArtManager = function(aa, gui){
 		am.m.$c.style.overflowX="hidden";
 		for(var i in aa.images){
 			var img=aa.images[i];
-			var label=document.createElement("div");
-			label.innerText=i;
-			am.m.$c.appendChild(label);
+			var div=document.createElement("div");
+			var label=document.createElement("label");
 			var canvas=document.createElement("canvas");
+			div.className="asset";
+			label.innerText=i;
 			canvas.width=Math.min(256,img.width);
 			canvas.height=Math.min(128,img.height);
 			var x=canvas.getContext("2d");
 			x.drawImage(img,0,0);
-			am.m.$c.appendChild(canvas);
-			canvas.onclick=(function(iname){
+			div.onclick=(function(iname){
 				return function(e){
 					new PixelEditor(gui, aa.images[iname], function(img){
 						aa.images[iname]=img;
@@ -39,6 +39,9 @@ ArtManager = function(aa, gui){
 					});
 				};
 			})(i);
+			am.m.$c.appendChild(div);
+			div.appendChild(label);
+			div.appendChild(canvas);
 		}
 	};
 	am.close = function(){
