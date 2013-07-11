@@ -1,6 +1,7 @@
 
 /// Manages tilesets and sprites... opens the pixel editor.
 // #disposable
+
 ArtManager = function(aa, gui){
 	var am=this;
 	var timeout=0;
@@ -27,7 +28,7 @@ ArtManager = function(aa, gui){
 			var label=document.createElement("label");
 			var canvas=document.createElement("canvas");
 			div.className="asset";
-			label.innerText=i;
+			label.innerText=i.replace(aa.dir,"").replace(".png","");
 			canvas.width=Math.min(256,img.width);
 			canvas.height=Math.min(128,img.height);
 			var x=canvas.getContext("2d");
