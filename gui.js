@@ -6,174 +6,171 @@ function Modal(_gui){
 		console.warn("gui.element not initialized. Creating the default overlay.",gui.element);
 		gui.overlay();
 	}
-	var that=this;
-	gui.modals.push(this);
-	this.modals=[];
+	var m=this;
+	gui.modals.push(m);
+	m.modals=[];
 	
-	this.$m=document.createElement("div"); this.$m.className="modal";
-	this.$c=document.createElement("div"); this.$c.className="content";
-	this.$tb=document.createElement("div"); this.$tb.className="titlebar";
-	this.$t=document.createElement("span"); this.$t.className="title";
-	this.$x=document.createElement("span"); this.$x.className="close-x";
+	m.$m=document.createElement("div"); m.$m.className="modal";
+	m.$c=document.createElement("div"); m.$c.className="content";
+	m.$tb=document.createElement("div"); m.$tb.className="titlebar";
+	m.$t=document.createElement("span"); m.$t.className="title";
+	m.$x=document.createElement("span"); m.$x.className="close-x";
 	
-	this.$tb.appendChild(this.$t);
-	this.$tb.appendChild(this.$x);
-	this.$m.appendChild(this.$tb);
-	this.$m.appendChild(this.$c);
-	gui.element.appendChild(this.$m);
+	m.$tb.appendChild(m.$t);
+	m.$tb.appendChild(m.$x);
+	m.$m.appendChild(m.$tb);
+	m.$m.appendChild(m.$c);
+	gui.element.appendChild(m.$m);
 	
-	this.$m.style.zIndex=++gui.z;
-	this.$m.style.opacity=0;
+	m.$m.style.zIndex=++gui.z;
+	m.$m.style.opacity=0;
 	setTimeout(function(){
-		that.$m.style.opacity=1;
+		m.$m.style.opacity=1;
 	},1);
 	
-	this.x=0;
-	this.y=0;
-	this.ox=0;
-	this.oy=0;
-	this.className="";
+	m.x=0;
+	m.y=0;
+	m.ox=0;
+	m.oy=0;
+	m.className="";
 	
-	this.onmove=null;
-	this.onclose=null;
+	m.onmove=null;
+	m.onclose=null;
 	
-	var windowMouseMove=function(e){that.position(e.clientX-that.ox,e.clientY-that.oy);};
+	var windowMouseMove=function(e){m.position(e.clientX-m.ox,e.clientY-m.oy);};
 	var bringToFront=function(e){
-		that.$m.style.zIndex=++gui.z;
-	};
+		m.$m.style.zIndex=++gui.z;
+		gui.active=m.onactivate?m.onactivate():m;
+	}; bringToFront();
 	var prevent=function(e){
 		e.preventDefault();
 	};
 	var xClick=function(e){
 		if(e.button!==0)return;
-		that.close(true);
+		m.close(true);
 	};
 	var xMouseDown=function(e){
-		that.$m.className=(that.className+" modal").trim();
-		that.ox=0;
-		that.oy=0;
+		m.$m.className=(m.className+" modal").trim();
+		m.ox=0;
+		m.oy=0;
 		removeEventListener('mousemove', windowMouseMove, true);
 	};
 	var tbMouseDown=function(e){
 		if(e.button!==0)return;
 		e.preventDefault();
-		that.$m.className=(that.className+" modal dragging").trim();
-		that.ox=e.clientX-that.$m.offsetLeft;
-		that.oy=e.clientY-that.$m.offsetTop;
+		m.$m.className=(m.className+" modal dragging").trim();
+		m.ox=e.clientX-m.$m.offsetLeft;
+		m.oy=e.clientY-m.$m.offsetTop;
 		addEventListener('mousemove', windowMouseMove, true);
 	};
 	var mouseUp=function(e){
-		that.$m.className=(that.className+" modal").trim();
-		that.ox=0;
-		that.oy=0;
+		m.$m.className=(m.className+" modal").trim();
+		m.ox=0;
+		m.oy=0;
 		removeEventListener('mousemove', windowMouseMove, true);
 	};
 	addEventListener('mouseup', mouseUp, true);
-	this.$tb.addEventListener('mousedown', tbMouseDown, true);
-	this.$m.addEventListener('mousedown', bringToFront, true);
-	this.$m.addEventListener('contextmenu', prevent, true);
-	this.$x.addEventListener('click', xClick, true);
-	this.$x.addEventListener('mousedown', xMouseDown, true);
+	m.$tb.addEventListener('mousedown', tbMouseDown, true);
+	m.$m.addEventListener('mousedown', bringToFront, true);
+	m.$m.addEventListener('contextmenu', prevent, true);
+	m.$x.addEventListener('click', xClick, true);
+	m.$x.addEventListener('mousedown', xMouseDown, true);
 	
-	this.position=function(x,y){
+	m.position=function(x,y){
 		if(typeof x!=="undefined"){
 			if(typeof x=="string"){
-				var thoust=this;
 				setTimeout(function(){
 					var gw=gui.element.clientWidth;
 					var gh=gui.element.clientHeight;
-					var mw=thoust.$m.scrollWidth;
-					var mh=thoust.$m.scrollHeight;
+					var mw=m.$m.scrollWidth;
+					var mh=m.$m.scrollHeight;
 					if(x=="random"){
-						thoust.x=10+Math.random()*(gw-mw-20);
-						thoust.y=10+Math.random()*(gh-mh-20);
+						m.x=10+Math.random()*(gw-mw-20);
+						m.y=10+Math.random()*(gh-mh-20);
 					}else if(x=="bounds"){
-						thoust.x=Math.min(Math.max(thoust.x,10),gw-mw-10);
-						thoust.y=Math.min(Math.max(thoust.y,10),gh-mh-10);
+						m.x=Math.min(Math.max(m.x,10),gw-mw-10);
+						m.y=Math.min(Math.max(m.y,10),gh-mh-10);
 					}else{
-						if(x.match(/top|bottom|center/)) thoust.x=gw/2-mw/2;
-						if(x.match(/left|right|center/)) thoust.y=gh/2-mh/2;
-						if(x.match(/top/)) thoust.y=10;
-						if(x.match(/bottom/)) thoust.y=gh-mh-10;
-						if(x.match(/left/)) thoust.x=10;
-						if(x.match(/right/)) thoust.x=gw-mw-10;
+						if(x.match(/top|bottom|center/)) m.x=gw/2-mw/2;
+						if(x.match(/left|right|center/)) m.y=gh/2-mh/2;
+						if(x.match(/top/)) m.y=10;
+						if(x.match(/bottom/)) m.y=gh-mh-10;
+						if(x.match(/left/)) m.x=10;
+						if(x.match(/right/)) m.x=gw-mw-10;
 					}
-					thoust.$m.style.left=(thoust.x-thoust.ox)+"px";
-					thoust.$m.style.top=(thoust.y-thoust.oy)+"px";
-					this.onmove&&this.onmove();
+					m.$m.style.left=(m.x-m.ox)+"px";
+					m.$m.style.top=(m.y-m.oy)+"px";
+					m.onmove&&m.onmove();
 				},1);
 			}else{
-				if(x)this.x=x;
-				if(y)this.y=y;
-				this.x=Math.max(10,this.x);
-				this.y=Math.max(10,this.y);
-				this.x=Math.min(this.x,gui.element.clientWidth-70);
-				this.y=Math.min(this.y,gui.element.clientHeight-25);
-				this.$m.style.left=(this.x)+"px";
-				this.$m.style.top=(this.y)+"px";
-				this.onmove&&this.onmove();
+				if(x)m.x=x;
+				if(y)m.y=y;
+				m.x=Math.max(10,m.x);
+				m.y=Math.max(10,m.y);
+				m.x=Math.min(m.x,gui.element.clientWidth-70);
+				m.y=Math.min(m.y,gui.element.clientHeight-25);
+				m.$m.style.left=(m.x)+"px";
+				m.$m.style.top=(m.y)+"px";
+				m.onmove&&m.onmove();
 			}
-
-
-			return this;
+			return m;
 		}
-		return {x:this.x,y:this.y};
+		return {x:m.x,y:m.y};
 	};
-	this.content=function(html){
+	m.content=function(html){
 		if(typeof html=="string"){
-			this.$c.innerHTML=html;
-			return this;
+			m.$c.innerHTML=html;
+			return m;
 		}else if(html instanceof HTMLElement){
-			this.$c.appendChild(html);
+			m.$c.appendChild(html);
 		}
-		return this.$c.innerHTML;
+		return m.$c.innerHTML;
 	};
-	this.title=function(text){
+	m.title=function(text){
 		if(typeof text=="string"){
 			if(text===""){
 				text="`";
 			}
-			this.$t.textContent=text;
-			return this;
+			m.$t.textContent=text;
+			return m;
 		}
-		return this.$t.textContent;
+		return m.$t.textContent;
 	};
-	this.resizable=function(bool){
-		//WARNING: this method doesn't really work and does weird shit!
+	m.resizable=function(bool){
+		//WARNING: m method doesn't really work and does weird shit!
 		if(bool===undefined)bool=true;
-		//this.$c.style.resize = bool?"both":"none"; 
-		//this.$c.style.overflow = bool?"auto":"default";
-		this.$c.className = "content"+(bool?" resizable":"");
+		//m.$c.style.resize = bool?"both":"none"; 
+		//m.$c.style.overflow = bool?"auto":"default";
+		m.$c.className = "content"+(bool?" resizable":"");
 		
 		var resizeTimer = 0;
-		this.$c.onresize = function(){
-			this.$m.className = "modal dragging resizing";
+		m.$c.onresize = function(){
+			m.$m.className = "modal dragging resizing";
 			if(resizeTimer)
 				clearTimeout(resizeTimer);
 		
 			resizeTimer = setTimeout(function(){
-				this.$m.className = "modal reset";
+				m.$m.className = "modal reset";
 			}, 500);
 		};
-		return bool;
+		return m;
 	};
-	this.closeable=function(bool){
+	m.closeable=function(bool){
 		if(bool===undefined)bool=true;
-		this.$x.style.display = (bool?"":"none");
-		
-		return bool;
+		m.$x.style.display = (bool?"":"none");
+		return m;
 	};
-	this.close=function(useEvent){
-		if(useEvent && this.onclose && !this.onclose()) return;
+	m.close=function(useEvent){
+		if(useEvent && m.onclose && !m.onclose()) return;
 		
 		removeEventListener('mouseup', mouseUp, true);
-		this.$tb.removeEventListener('mousedown', tbMouseDown, true);
-		this.$m.removeEventListener('mousedown', bringToFront, true);
-		this.$m.removeEventListener('contextmenu', prevent, true);
-		this.$x.removeEventListener('click', xClick, true);
-		this.$x.removeEventListener('mousedown', xMouseDown, true);
+		m.$tb.removeEventListener('mousedown', tbMouseDown, true);
+		m.$m.removeEventListener('mousedown', bringToFront, true);
+		m.$m.removeEventListener('contextmenu', prevent, true);
+		m.$x.removeEventListener('click', xClick, true);
+		m.$x.removeEventListener('mousedown', xMouseDown, true);
 	
-		var $m=this.$m;
+		var $m=m.$m;
 		$m.classList.add("closing");
 		$m.style.webkitTransition="all .3s ease-out";
 		$m.style.opacity="0";
@@ -182,49 +179,48 @@ function Modal(_gui){
 		setTimeout(function(){
 			$m.parentElement&&$m.parentElement.removeChild($m);
 		},5100);
-		gui.modals.splice(gui.modals.indexOf(this),1);
+		gui.modals.splice(gui.modals.indexOf(m),1);
 		return $m;
 	};
-	/*this.style=function(css){
-		this.$c.style.cssText=css;
+	/*m.style=function(css){
+		m.$c.style.cssText=css;
 	};*/
-	this.finishAnimating=function(){
-		this.$m.style.webkitTransition="none";
-		this.$m.style.transition="none";
-		var thoust=this;
+	m.finishAnimating=function(){
+		m.$m.style.webkitTransition="none";
+		m.$m.style.transition="none";
 		setTimeout(function(){
-			thoust.$m.style.webkitTransition="opacity, left, right .2s ease-in-out";
-			thoust.$m.style.transition="opacity, left, right .2s ease-in-out";
-			thoust.$m.style.opacity=1;
+			m.$m.style.webkitTransition="opacity, left, right .2s ease-in-out";
+			m.$m.style.transition="opacity, left, right .2s ease-in-out";
+			m.$m.style.opacity=1;
 		},50);
-		return this;
+		return m;
 	};
-	this.setClassName=function(cn){
+	m.setClassName=function(cn){
 		if(typeof cn=="string"){
-			this.className=cn;
-			return this;
+			m.className=cn;
+			return m;
 		}else throw new TypeError("String");
 	};
 	
-	this.$=function(q,f){
-		q=this.$m.querySelector(q);
+	m.$=function(q,f){
+		q=m.$m.querySelector(q);
 		if(f){
 			f(q);
-			return this;
+			return m;
 		}
 		return q;
 	};
-	this.$$=function(q,f){
-		q=this.$m.querySelectorAll(q);
+	m.$$=function(q,f){
+		q=m.$m.querySelectorAll(q);
 		if(f){
 			for(i=0;i<q.length;i++){
 				f(q[i]);
 			}
-			return this;
+			return m;
 		}
 		return q;
 	};
-	return this;
+	return m;
 }
 
 GUI = function(){
@@ -232,6 +228,7 @@ GUI = function(){
 		element: null,
 		modals: [],
 		z: 1337,
+		active: null,
 		overlay: function(){
 			this.element = document.createElement("div");
 			document.body.appendChild(this.element);
@@ -253,7 +250,7 @@ GUI = function(){
 				message = "Additionally, an error occured when trying to display the error. idfk";
 			}
 			
-			var mb=new Modal();
+			var mb=this.M();
 			mb.position("center");
 			if(lineNumber && fileName){
 				mb.title(name+" in "+fileName+" on line "+lineNumber);
@@ -276,7 +273,7 @@ GUI = function(){
 				title="Message";
 			}
 			content=content.toString().replace("\n","<br>");
-			var mb=new Modal();
+			var mb=this.M();
 			mb.position("center");
 			mb.title(title);
 			mb.content(content+"<br><button class='ok'>OK</button>");
@@ -293,7 +290,7 @@ GUI = function(){
 				title="Question";
 			}
 			content=content.toString().replace("\n","<br>");
-			var mb=new Modal();
+			var mb=this.M();
 			mb.position("center");
 			mb.title(title);
 			mb.content(content+"<br><button class='yes'>Yes</button><button class='no'>No</button>");
@@ -315,7 +312,7 @@ GUI = function(){
 				title="Confirm";
 			}
 			content=content.toString().replace("\n","<br>");
-			var mb=new Modal();
+			var mb=this.M();
 			mb.position("center");
 			mb.title(title);
 			mb.content(content+"<br><button class='ok'>OK</button><button class='cancel'>Cancel</button>");
@@ -331,7 +328,7 @@ GUI = function(){
 			return mb;
 		},
 		prompt: function(title,defaultString,callback){
-			var mb=new Modal();
+			var mb=this.M();
 			mb.position("center");
 			mb.title(title);
 			mb.content("<input type=text value='"+defaultString+"'><br><button class='ok'>OK</button>");
@@ -363,7 +360,7 @@ GUI = function(){
 /*
 
 GUI = function(){
-	var gui = this;
+	var gui = m;
 	gui.modals = [];
 	gui.M = function(o, _gui){
 		_gui = _gui || gui;
@@ -383,26 +380,26 @@ GUI = function(){
 				
 				var b = 5, th = (_gui==gui?20:16);
 				ctx.fillStyle="rgba(0,0,0,1)";
-				ctx.fillRect(this.x,this.y-th,this.w,this.h+th);
+				ctx.fillRect(m.x,m.y-th,m.w,m.h+th);
 				ctx.strokeStyle="rgba(255,255,255,0.6)";
-				ctx.strokeRect(this.x-b,this.y-th-b,this.w+b+b,this.h+th+b+b);
+				ctx.strokeRect(m.x-b,m.y-th-b,m.w+b+b,m.h+th+b+b);
 				
 				ctx.font = th-2+"px Arial";
 				ctx.textBaseline = "bottom";
 				ctx.fillStyle="rgba(255,255,255,0.6)";
-				ctx.fillText(this.title,this.x,this.y-3);
+				ctx.fillText(m.title,m.x,m.y-3);
 				
-				if(this.canvas.width!=this.w)this.canvas.width=this.w;
-				if(this.canvas.height!=this.h)this.canvas.height=this.h;
+				if(m.canvas.width!=m.w)m.canvas.width=m.w;
+				if(m.canvas.height!=m.h)m.canvas.height=m.h;
 				ctx.save();
-				this.draw();
+				m.draw();
 				ctx.restore();
-				for(var i=0;i<this.modals.length;i++){
-					var m=this.modals[i];
+				for(var i=0;i<m.modals.length;i++){
+					var m=m.modals[i];
 					m.mouse={
-						x: this.mouse.x-m.x,
-						y: this.mouse.y-m.y,
-						d: this.mouse.d,
+						x: m.mouse.x-m.x,
+						y: m.mouse.y-m.y,
+						d: m.mouse.d,
 						prev: {
 							x: m.mouse.x,
 							y: m.mouse.y,
@@ -412,30 +409,30 @@ GUI = function(){
 							}
 						}
 					};
-					m.drawM(this.ctx);
+					m.drawM(m.ctx);
 					m.mouse.leftClicked=false;
 				}
-				ctx.drawImage(this.canvas,this.x,this.y);
+				ctx.drawImage(m.canvas,m.x,m.y);
 				
 				ctx.restore();
 			},
 			draw: function(){
-				var x=this.ctx;
-				x.clearRect(0,0,this.w,this.h);
-				x.fillStyle="rgba(255,255,0,"+Math.sin(this.x/50)+")";
+				var x=m.ctx;
+				x.clearRect(0,0,m.w,m.h);
+				x.fillStyle="rgba(255,255,0,"+Math.sin(m.x/50)+")";
 				x.fillRect(50,50,50,50);
 				x.fillRect(0,0,50,50);
 			},
 			close: function(force){
 				if(!force){
-					if(this.onbeforeunload){
-						if(!this.onbeforeunload()){
+					if(m.onbeforeunload){
+						if(!m.onbeforeunload()){
 							return;
 						}
 					}
 				}
-				if(!this.parent.modals)throw new Error("PARENT HATH NO MODALS");
-				this.parent.modals.splice(this.parent.modals.indexOf(this),1);
+				if(!m.parent.modals)throw new Error("PARENT HATH NO MODALS");
+				m.parent.modals.splice(m.parent.modals.indexOf(m),1);
 			},
 			onbeforeclose: null,
 		};
