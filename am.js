@@ -3,6 +3,7 @@
 // #disposable
 ArtManager = function(aa, gui){
 	var am=this;
+	var timeout=0;
 	am.show = function(){
 		am.m = this.m || gui.M();
 		am.m.title("Art Manager").position("center left-ish?");

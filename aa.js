@@ -1,10 +1,11 @@
 
 /// Handles loading and storing of images for live editing. Also uploading.
 // #persistant
-
+ 
 ArtAssets = function(mainctx, allloaded, update){
 	var aa=this;
 	aa.progress=0;
+	aa.progress_l=0;
 	aa.images={};
 	aa.dir="content/art/";
 // splitting tilesets into tiles is unnecessary. drawImage supports clipping.
@@ -19,14 +20,15 @@ ArtAssets = function(mainctx, allloaded, update){
 		}
 	};
 	
+	//should reuse ajax code
 	aa.uploadImage=function(name){
-		var form=new FormData();
 		var img=aa.getImage(name);
-		if(!aa.src.match(/^data:/)){
+		if(!img.src.match(/^data:/)){
 			console.log("uploadImage: image not modified.");
-			
+			return;
 		}
-		form.append("file",aa.src,aa.dir+name);
+		var form=new FormData();
+		form.append("imagedata",img.src,aa.dir+name);
 		form.append("fname",aa.dir+name);
 		var x=new XMLHttpRequest();
 		x.onreadystatechange=function(){
@@ -37,9 +39,10 @@ ArtAssets = function(mainctx, allloaded, update){
 	};
 	aa.newImage=function(name, img){
 		var form=new FormData();
-		var fname=aa.dir+name;
+		if(name.indexOf(".png")==-1)name+=".png";
+		var fname=aa.dir;
 		aa.images[fname]=img;
-		form.append("file","img",fname);
+		form.append("imagedata",img.src,fname);
 		form.append("fname",fname);
 		var x=new XMLHttpRequest();
 		x.onreadystatechange=function(){
@@ -47,6 +50,7 @@ ArtAssets = function(mainctx, allloaded, update){
 		};
 		x.open("POST","upload.py");
 		x.send(form);
+		return fname||name;//idk||update_later
 	};
 	//.replace(/content\/art\//,"")
 	
@@ -84,4 +88,5 @@ ArtAssets = function(mainctx, allloaded, update){
 	//x.open("POST","upload.py");
 	x.open("GET","listcontent.py");
 	x.send();
+	
 };
