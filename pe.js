@@ -21,12 +21,11 @@ PixelEditor = function(gui, img, update){
 		pe.redos.push(pe.ocanvas.toDataURL("image/png"));
 		var img=new Image();
 		img.onload=function(){
-			pe.octx.clearRect(img.naturalWidth,img.naturalHeight);
+			pe.img=img;
+			pe.octx.clearRect(0,0,img.naturalWidth,img.naturalHeight);
 			pe.octx.drawImage(img,0,0);
-			console.log("?");
-		};
-		img.onerror=function(){
-			console.log("err");
+			pe.redraw();
+			update(img);
 		};
 		img.src=pe.undos.pop();
 		return true;
@@ -37,8 +36,10 @@ PixelEditor = function(gui, img, update){
 		pe.undos.push(pe.ocanvas.toDataURL("image/png"));
 		var img=new Image();
 		img.onload=function(){
-			pe.octx.clearRect(img.naturalWidth,img.naturalHeight);
+			pe.octx.clearRect(0,0,img.naturalWidth,img.naturalHeight);
 			pe.octx.drawImage(img,0,0);
+			pe.redraw();
+			update(img);
 		};
 		img.src=pe.redos.pop();
 		return true;
@@ -62,19 +63,24 @@ PixelEditor = function(gui, img, update){
 	pe.ocanvas.height = pe.img.height;
 	pe.canvas.width = pe.img.width * 3;
 	pe.canvas.height = pe.img.height * 3;
+	
 	pe.ctx=pe.canvas.getContext("2d");
 	pe.octx=pe.ocanvas.getContext("2d");
+	
 	pe.ctx.imageSmoothingEnabled=false;
 	pe.ctx.webkitImageSmoothingEnabled=false;
 	pe.ctx.mozImageSmoothingEnabled=false;
+	
 	pe.octx.drawImage(pe.img,0,0);
-	console.log(pe.img.width);
+	
 	//pe.ctx.drawImage(pe.img,0,0,pe.canvas.width,pe.canvas.height);
 	pe.canvas.style.width=pe.ocanvas.width*pe.view.scale+"px";
 	pe.canvas.style.height=pe.ocanvas.height*pe.view.scale+"px";
 	
-	pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);
-	pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
+	(pe.redraw=function(){
+		pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);
+		pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
+	})();
 	
 	pe.m = gui.M();
 	pe.m.title("Pixel Editor");
@@ -105,6 +111,7 @@ PixelEditor = function(gui, img, update){
 		var rect=pe.canvas.getBoundingClientRect();
 		pe.m.mouse.x=((e.clientX-rect.left)/pe.view.scale)|0;
 		pe.m.mouse.y=((e.clientY-rect.top)/pe.view.scale)|0;
+		pe.undoable();
 		if(e.button){
 			pe.m.mouse.right=true;
 		}else{
@@ -119,75 +126,81 @@ PixelEditor = function(gui, img, update){
 				var _x=pe.m.mouse.x,_y=pe.m.mouse.y;
 				var id=pe.octx.getImageData(0,0,pe.canvas.width,pe.canvas.height);
 				var rgb=pe.color.match(/rgb\((\d+),(\d+),(\d+)\)/),
-					r=rgb[1],
-					g=rgb[2],
-					b=rgb[3];
-				fill(_x,_y,r,g,b);
+					r=Number(rgb[1]),
+					g=Number(rgb[2]),
+					b=Number(rgb[3]);
+				fill(_x,_y,r,g,b,255);
 				pe.octx.putImageData(id,0,0);
 				
 				pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);
 				pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
 				
-				
-				function at(x,y){
-					if(x<0)throw new Error("x<0");
-					if(y<0)throw new Error("y<0");
-					if(x>id.width)throw new Error("x>id.width");
-					if(y>id.height)throw new Error("y>id.height");
+				function fill(x,y, r,g,b,a, wr,wg,wb,wa, life){
+					if(x<0||y<0||x>=id.width||y>=id.height)return;
 					var i=(x%id.width+y*id.width)*4;
-					return [id.data[i],id.data[i+1],id.data[i+2],id.data[i+3]];
-				}
-				function set(x,y, r,g,b){
-					var i=(x%id.width+y*id.width)*4;
-					//console.log(i,id.data.length);
-					id.data[i+0]=r;
-					id.data[i+1]=g;
-					id.data[i+2]=b;
-					id.data[i+3]=255;
-				}
-				function eqat(x,y, r,g,b,a){
-					var i=(x%id.width+y*id.width)*4;
-					return id.data[i+3]==a
-						&& id.data[i+0]==r
-						&& id.data[i+1]==g
-						&& id.data[i+2]==b;
-				}
-				function fill(x,y, r,g,b, wr,wg,wb,wa, life){
+					
 					if(wr===undefined){
-						var within=at(x,y);
-						var wr=within[0], wg=within[1], wb=within[2], wa=within[3];
+						var wr=id.data[i+0],wg=id.data[i+1],wb=id.data[i+2],wa=id.data[i+3];
 						console.log("fill within color",wr,wg,wb);
 						console.log("fill with color",r,g,b);
-						if(r==wr&&g==wg&&b==wb){
+						if(r==wr&&g==wg&&b==wb&&a==wa){
 							console.log("Already that color.");
 							return false;
 						}
 						var life=650;
 					}
-					if(x<0||y<0||x>=id.width||y>=id.height)return;
-					var i=(x%id.width+y*id.width)*4;
 					
 					if(id.data[i+3]==wa
 					&& id.data[i+0]==wr
 					&& id.data[i+1]==wg
 					&& id.data[i+2]==wb){
-						id.data[i+0]=r;
-						id.data[i+1]=g;
-						id.data[i+2]=b;
-						id.data[i+3]=255;
-					}else{
-						return;
-					};
-					
+					   id.data[i+0]=r;
+					   id.data[i+1]=g;
+					   id.data[i+2]=b;
+					   id.data[i+3]=a;
+					}else return;
 					
 					if(--life){
-						if(x<id.width)fill(x+1,y, r,g,b, wr,wg,wb,wa, life);
-						if(y<id.height)fill(x,y+1, r,g,b, wr,wg,wb,wa, life);
-						if(x>0)fill(x-1,y, r,g,b, wr,wg,wb,wa, life);
-						if(y>0)fill(x,y-1, r,g,b, wr,wg,wb,wa, life);
+						if(x<id.width)fill(x+1,y, r,g,b,a, wr,wg,wb,wa, life);
+						if(y<id.height)fill(x,y+1, r,g,b,a, wr,wg,wb,wa, life);
+						if(x>0)fill(x-1,y, r,g,b,a, wr,wg,wb,wa, life);
+						if(y>0)fill(x,y-1, r,g,b,a, wr,wg,wb,wa, life);
+					}
+				}
+			}else if(pe.tool==="Replace Color"){
+				var _x=pe.m.mouse.x,_y=pe.m.mouse.y;
+				var id=pe.octx.getImageData(0,0,pe.canvas.width,pe.canvas.height);
+				var rgb=pe.color.match(/rgb\((\d+),(\d+),(\d+)\)/),
+					r=Number(rgb[1]),
+					g=Number(rgb[2]),
+					b=Number(rgb[3]);
+				replaceColor(_x,_y,r,g,b,255);
+				pe.octx.putImageData(id,0,0);
+				
+				pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);
+				pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
+				
+				function replaceColor(x,y, r,g,b,a){
+					if(x<0||y<0||x>=id.width||y>=id.height)return;
+					var i=(x%id.width+y*id.width)*4;
+					var wr=id.data[i+0],wg=id.data[i+1],wb=id.data[i+2],wa=id.data[i+3];
+					
+					console.log("replace all",[wr,wg,wb,wa],"with",[r,g,b,a]);
+					
+					for(var i=0;i<id.data.length;i+=4){
+						if(id.data[i+3]==wa
+						&& id.data[i+0]==wr
+						&& id.data[i+1]==wg
+						&& id.data[i+2]==wb){
+						   id.data[i+0]=r;
+						   id.data[i+1]=g;
+						   id.data[i+2]=b;
+						   id.data[i+3]=a;
+						}
 					}
 				}
 			}
+			
 		}
 	};
 	pe.mouseup = function(e){
@@ -329,16 +342,18 @@ PixelEditor = function(gui, img, update){
 				break;
 			}
 		//}
-		keys[e.keyCode]=true;
+		//keys[e.keyCode]=true;
 		if(String.fromCharCode(e.keyCode).toUpperCase()==="A"){
 			return false;
 		}
 	};
 	pe.mousewheel = function(e){
-		if(e.wheelDelta>0){
-			pe.view.scale++;
-		}else{
-			pe.view.scale--;
+		if(e){
+			if(e.wheelDelta>0){
+				pe.view.scale++;
+			}else{
+				pe.view.scale--;
+			}
 		}
 		pe.view.scale=Math.min(20,Math.max(1,pe.view.scale));
 		pe.canvas.style.width=pe.ocanvas.width*pe.view.scale+"px";
@@ -348,17 +363,49 @@ PixelEditor = function(gui, img, update){
 		pe.canvas.style.mozTransform="scale("+pe.view.scale+")";
 		pe.canvas.style.webkitTransform="scale("+pe.view.scale+")";*/
 	};
+	addEventListener('keydown', pe.keydown);
 	addEventListener("mousemove",pe.mousemove);
 	addEventListener("mouseup",pe.mouseup);
 	pe.m.$c.addEventListener("mousedown",pe.mousedown);
 	pe.m.$c.addEventListener("mousewheel",pe.mousewheel);
-	pe.m.$m.addEventListener('keydown', pe.keydown);
 	
-	pe.tb=gui.M();
-	pe.tb.title("Tools");
-	pe.tb.position("right");
-	pe.tb.closeable(false);
-	pe.tools=["Paint","45","Spray","Fill","Select","Tile"];
+	var resizer=null;
+	
+	pe.tb=gui.M()
+	.title("Tools")
+	.position("right")
+	.closeable(false)
+	.content("<button id='resize-canvas'>Resize Canvas</button>")
+	.$('#resize-canvas',function(btn){btn.onclick=function(){
+		if(!resizer){
+			resizer=gui.M()
+			.title("Resize Canvas")
+			.position("center")
+			.content(
+				"<input type='number' min=0 max=1024 id='width' value='"+pe.ocanvas.width+"'/> x "+
+				"<input type='number' min=0 max=1024 id='height' value='"+pe.ocanvas.height+"'/>"+
+				"<input type='submit' min=0 max=1024 id='submit'/>"
+			).$("#width",function(winput){
+				winput.onchange=function(){
+					resizer.$("#height").value=this.value;
+				};
+			}).$("#submit",function(submit){
+				submit.onclick=function(){
+					pe.ocanvas.width=resizer.$("#width").value;
+					pe.ocanvas.height=resizer.$("#height").value;
+					pe.canvas.width=pe.ocanvas.width*3;
+					pe.canvas.height=pe.ocanvas.height*3;
+					//pe.octc.drawImage(pe.img,0,0);
+					//pe.ctc.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
+					pe.redraw();
+					pe.mousewheel();
+					resizer.close();
+					resizer=null;
+				};
+			});
+		}
+	};});
+	pe.tools=["Paint","45","Spray","Fill","Replace Color","Select","Tile"];
 	var toolOnClick=function(){
 		pe.tool=this.tool;
 		if(pe.tb.$tool){
@@ -453,11 +500,15 @@ PixelEditor = function(gui, img, update){
 	pe.m.onclose = function(){
 		pe.tb.close();
 		pe.pal.close();
+		removeEventListener('keydown', pe.keydown);
 		removeEventListener("mousemove",pe.mousemove);
 		removeEventListener("mouseup",pe.mouseup);
 		pe.m.$c.removeEventListener("mousedown",pe.mousedown);
 		pe.m.$c.removeEventListener("mousewheel",pe.mousewheel);
-		pe.m.$m.removeEventListener('keydown', pe.keydown);
+		if(resizer){
+			resizer.close();
+			resizer=null;
+		}
 		return true;
 	};
 };
