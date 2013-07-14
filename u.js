@@ -35,5 +35,7 @@ Universe = function(mainctx){
 		mainctx.rect(0,0,mainctx.canvas.width,mainctx.canvas.height);
 		mainctx.fillStyle=u.pat;
 		mainctx.fill();
+		
+		
 	};
 };

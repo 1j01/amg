@@ -11,7 +11,7 @@
 	var am = new ArtManager(aa, gui);
 	
 	var u = new Universe(mainctx);
-	var room = new Room("starting area");
+	var room = new Room("starting area",70,50,aa);
 	u.addRoom(room);
 	
 	var le = new LevelEditor(u, mainctx);
