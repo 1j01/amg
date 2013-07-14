@@ -11,9 +11,8 @@
 			    image-rendering: -webkit-optimize-contrast;
 			    image-rendering: -o-crisp-edges;
 			    image-rendering: optimize-contrast;
-				cursor: default;
 			}
-			canvas,body,html,#gui-overlay{
+			canvas,body,html,#gui-overlay,canvas{
 				-webkit-user-select: none;
 				-moz-user-select: none;
 				-ms-user-select: none;
@@ -25,20 +24,29 @@
 			.selected{
 				box-shadow: 0 0 2px 1px black inset, 0 0 1px 3px white inset !important;
 			}
+			.asset *{
+				cursor: pointer !important;
+			}
 			.asset{
-				cursor: pointer;
-				color: rgba(255,255,255,0.7);
+				color: rgba(255,255,255,0.7) !important;
+				border: 1px solid rgba(255,255,255,0.00) !important;
 			}
 			.asset:hover{
-				color: rgba(255,255,255,0.99);
+				color: rgba(255,255,255,0.99) !important;
+				border: 1px solid rgba(255,255,255,0.99) !important;
 			}
 			.asset label{
 				display: block;
+			}
+			.modal .content {
+				background: rgba(0,0,0,0.1) !important;
 			}
 			</style>
 		<link rel="stylesheet" type="text/css" href="http://1j01.kd.io/lib/gui.css">
 	</head>
 	<body>
+		<script>onerror=function(err,url,line){document.body.style.background="red"};</script>
+		
 		<canvas id="main"/>
 		
 		<script src="aa.js"></script>
