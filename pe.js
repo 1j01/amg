@@ -331,7 +331,7 @@ PixelEditor = function(gui, img, update){
 			
 				pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);
 				pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
-				if(pe.view.scale>4){
+				/*if(pe.view.scale>4){
 					pe.ctx.strokeStyle="#FFF";
 					pe.ctx.globalCompositeOperation="xor";
 					pe.ctx.beginPath();
@@ -342,7 +342,7 @@ PixelEditor = function(gui, img, update){
 					pe.ctx.lineTo(pe.m.mouse.x*s,pe.canvas.height);
 					pe.ctx.stroke();
 					pe.ctx.globalCompositeOperation="source-over";
-				}
+				}*/
 			}
 			
 			pe.m.mouse.prev.left=pe.m.mouse.left;
