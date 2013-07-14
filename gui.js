@@ -40,7 +40,9 @@ function Modal(_gui){
 	var windowMouseMove=function(e){m.position(e.clientX-m.ox,e.clientY-m.oy);};
 	var bringToFront=function(e){
 		m.$m.style.zIndex=++gui.z;
+		if(gui.active)gui.active.isActive=false;
 		gui.active=m.onactivate?m.onactivate():m;
+		gui.active.isActive=true;
 	}; bringToFront();
 	var prevent=function(e){
 		e.preventDefault();
