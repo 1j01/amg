@@ -3,6 +3,7 @@
 // #disposable
 PixelEditor = function(gui, img, update){
 	var pe = this;
+	somePixelEditor = pe;
 	
 	pe.tilesetmode = false;
 	pe.tool = "Paint";
@@ -13,74 +14,100 @@ PixelEditor = function(gui, img, update){
 	pe.undoable = function(){
 		console.log("Creating undoable state.");
 		pe.undos.push(pe.ocanvas.toDataURL("image/png"));
+		if(pe.redos.length)console.log(pe.redos.length+" redos lost.");
 		pe.redos=[];
 	};
 	pe.undo = function(){
-		console.log("Undo.");
 		if(pe.undos.length<1)return false;
+		console.log("Undo.");
 		pe.redos.push(pe.ocanvas.toDataURL("image/png"));
 		var img=new Image();
 		img.onload=function(){
 			pe.img=img;
 			pe.octx.clearRect(0,0,img.naturalWidth,img.naturalHeight);
 			pe.octx.drawImage(img,0,0);
-			pe.redraw();
+			pe.redraw(true);
 			update(img);
 		};
 		img.src=pe.undos.pop();
 		return true;
 	};
 	pe.redo = function(){
-		console.log("Redo.");
 		if(pe.redos.length<1)return false;
+		console.log("Redo.");
 		pe.undos.push(pe.ocanvas.toDataURL("image/png"));
-		var img=new Image();
-		img.onload=function(){
+		var img = new Image();
+		img.onload = function(){
+			pe.img=img;
 			pe.octx.clearRect(0,0,img.naturalWidth,img.naturalHeight);
 			pe.octx.drawImage(img,0,0);
-			pe.redraw();
+			pe.redraw(true);
 			update(img);
 		};
-		img.src=pe.redos.pop();
+		img.src = pe.redos.pop();
 		return true;
 	};
 	
 	pe.ocanvas = document.createElement("canvas");
 	pe.canvas = document.createElement("canvas");
-	if(!img){
+	
+	pe.canvas.style.transition = "none";
+	/*if(!img){
 		pe.img = document.createElement("img");
 		pe.img.width = 128;
 		pe.img.height = 128;
 	}else{
 		pe.img = img;
+	}*/
+	if(img){
+		pe.img = img;
+		pe.ocanvas.width = pe.img.width;
+		pe.ocanvas.height = pe.img.height;
+		pe.canvas.width = pe.canvas.width * 3;
+		pe.canvas.height = pe.canvas.height * 3;
+	}else{
+		pe.ocanvas.width = 128;
+		pe.ocanvas.height = 128;
+		pe.canvas.width = pe.canvas.width * 3;
+		pe.canvas.height = pe.canvas.height * 3;
 	}
 	pe.view = {
 		scale: 2,
-		x: pe.img.width/2,
-		y: pe.img.height/2,
+		x: pe.canvas.width/2,
+		y: pe.canvas.height/2,
 	};
-	pe.ocanvas.width = pe.img.width;
-	pe.ocanvas.height = pe.img.height;
-	pe.canvas.width = pe.img.width * 3;
-	pe.canvas.height = pe.img.height * 3;
 	
 	pe.ctx=pe.canvas.getContext("2d");
 	pe.octx=pe.ocanvas.getContext("2d");
 	
-	pe.ctx.imageSmoothingEnabled=false;
-	pe.ctx.webkitImageSmoothingEnabled=false;
-	pe.ctx.mozImageSmoothingEnabled=false;
+	//pe.ctx.imageSmoothingEnabled=false;
+	//pe.ctx.webkitImageSmoothingEnabled=false;
+	//pe.ctx.mozImageSmoothingEnabled=false;
+	//pe.ctx.patternQuality = "fast";
 	
-	pe.octx.drawImage(pe.img,0,0);
+	//pe.octx.drawImage(pe.img,0,0);
 	
 	//pe.ctx.drawImage(pe.img,0,0,pe.canvas.width,pe.canvas.height);
-	pe.canvas.style.width=pe.ocanvas.width*pe.view.scale+"px";
-	pe.canvas.style.height=pe.ocanvas.height*pe.view.scale+"px";
+	//pe.canvas.style.width=pe.ocanvas.width*pe.view.scale+"px";
+	//pe.canvas.style.height=pe.ocanvas.height*pe.view.scale+"px";
 	
-	(pe.redraw=function(){
+	pe.redraw=function(updateSize){
+		if(updateSize){
+			pe.ocanvas.width=pe.img.naturalWidth;
+			pe.ocanvas.height=pe.img.naturalHeight;
+		}
+		pe.canvas.width=pe.ocanvas.width*3;
+		pe.canvas.height=pe.ocanvas.height*3;
+		pe.canvas.style.width=pe.ocanvas.width*pe.view.scale+"px";
+		pe.canvas.style.height=pe.ocanvas.height*pe.view.scale+"px";
+		if(pe.img)pe.octx.drawImage(pe.img,0,0);
 		pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);
+		pe.ctx.imageSmoothingEnabled=false;
+		pe.ctx.webkitImageSmoothingEnabled=false;
+		pe.ctx.mozImageSmoothingEnabled=false;
 		pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
-	})();
+	};
+	pe.redraw(!!img);
 	
 	pe.m = gui.M();
 	pe.m.title("Pixel Editor");
@@ -111,12 +138,12 @@ PixelEditor = function(gui, img, update){
 		var rect=pe.canvas.getBoundingClientRect();
 		pe.m.mouse.x=((e.clientX-rect.left)/pe.view.scale)|0;
 		pe.m.mouse.y=((e.clientY-rect.top)/pe.view.scale)|0;
-		pe.undoable();
 		if(e.button){
 			pe.m.mouse.right=true;
 		}else{
 			pe.m.mouse.left=true;
 			if(pe.tool==="Paint"){
+				pe.undoable();
 				pe.octx.fillStyle=pe.color;
 				pe.octx.fillRect(pe.m.mouse.x,pe.m.mouse.y,1,1);
 				
@@ -148,6 +175,7 @@ PixelEditor = function(gui, img, update){
 							return false;
 						}
 						var life=650;
+						pe.undoable();
 					}
 					
 					if(id.data[i+3]==wa
@@ -186,6 +214,11 @@ PixelEditor = function(gui, img, update){
 					var wr=id.data[i+0],wg=id.data[i+1],wb=id.data[i+2],wa=id.data[i+3];
 					
 					console.log("replace all",[wr,wg,wb,wa],"with",[r,g,b,a]);
+					if(r==wr&&g==wg&&b==wb&&a==wa){
+						console.log("same color");
+						return;
+					}
+					pe.undoable();
 					
 					for(var i=0;i<id.data.length;i+=4){
 						if(id.data[i+3]==wa
@@ -317,8 +350,8 @@ PixelEditor = function(gui, img, update){
 		//},1);
 	};
 	pe.keydown = function(e){
-		//if(!keys[e.keyCode]){
-			console.log(String.fromCharCode(e.keyCode)+": ",e.keyCode);
+		if(pe.m.isActive){
+			if(window.logkeys)console.log(String.fromCharCode(e.keyCode)+": ",e.keyCode);
 			switch(String.fromCharCode(e.keyCode).toUpperCase()){
 				case "Z"://undo (+shift=redo)
 					e.shiftKey? pe.redo():pe.undo();
@@ -341,10 +374,9 @@ PixelEditor = function(gui, img, update){
 					console.log(e.clipboard,e);
 				break;
 			}
-		//}
-		//keys[e.keyCode]=true;
-		if(String.fromCharCode(e.keyCode).toUpperCase()==="A"){
-			return false;
+			//if(String.fromCharCode(e.keyCode).toUpperCase()==="A"){
+			//	return false;
+			//}
 		}
 	};
 	pe.mousewheel = function(e){
@@ -354,14 +386,17 @@ PixelEditor = function(gui, img, update){
 			}else{
 				pe.view.scale--;
 			}
-		}
+			e.preventDefault();
+		}else console.warn("not really intended");
 		pe.view.scale=Math.min(20,Math.max(1,pe.view.scale));
-		pe.canvas.style.width=pe.ocanvas.width*pe.view.scale+"px";
-		pe.canvas.style.height=pe.ocanvas.height*pe.view.scale+"px";
+		//pe.canvas.style.width=pe.ocanvas.width*pe.view.scale+"px";
+		//pe.canvas.style.height=pe.ocanvas.height*pe.view.scale+"px";
 		/*pe.canvas.style.transform="scale("+pe.view.scale+")";
 		pe.canvas.style.oTransform="scale("+pe.view.scale+")";
 		pe.canvas.style.mozTransform="scale("+pe.view.scale+")";
 		pe.canvas.style.webkitTransform="scale("+pe.view.scale+")";*/
+		pe.redraw(false);
+		return false;
 	};
 	addEventListener('keydown', pe.keydown);
 	addEventListener("mousemove",pe.mousemove);
@@ -372,39 +407,44 @@ PixelEditor = function(gui, img, update){
 	var resizer=null;
 	
 	pe.tb=gui.M()
-	.title("Tools")
-	.position("right")
-	.closeable(false)
-	.content("<button id='resize-canvas'>Resize Canvas</button>")
-	.$('#resize-canvas',function(btn){btn.onclick=function(){
-		if(!resizer){
-			resizer=gui.M()
-			.title("Resize Canvas")
-			.position("center")
-			.content(
-				"<input type='number' min=0 max=1024 id='width' value='"+pe.ocanvas.width+"'/> x "+
-				"<input type='number' min=0 max=1024 id='height' value='"+pe.ocanvas.height+"'/>"+
-				"<input type='submit' min=0 max=1024 id='submit'/>"
-			).$("#width",function(winput){
-				winput.onchange=function(){
-					resizer.$("#height").value=this.value;
-				};
-			}).$("#submit",function(submit){
-				submit.onclick=function(){
-					pe.ocanvas.width=resizer.$("#width").value;
-					pe.ocanvas.height=resizer.$("#height").value;
-					pe.canvas.width=pe.ocanvas.width*3;
-					pe.canvas.height=pe.ocanvas.height*3;
-					//pe.octc.drawImage(pe.img,0,0);
-					//pe.ctc.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
-					pe.redraw();
-					pe.mousewheel();
-					resizer.close();
-					resizer=null;
-				};
-			});
-		}
-	};});
+		.title("Tools")
+		.position("right")
+		.closeable(false)
+		.content("<button id='resize-canvas'>Resize Canvas</button>")
+		.$('#resize-canvas',function(btn){
+			btn.onclick=function(){
+				if(!resizer){
+					resizer=gui.M()
+						.title("Resize Canvas")
+						.position("center")
+						.content(
+							"<input type='number' min=0 max=1024 id='width' value='"+pe.ocanvas.width+"'/> x "+
+							"<input type='number' min=0 max=1024 id='height' value='"+pe.ocanvas.height+"'/> "+
+							"<input type='submit' min=0 max=1024 id='submit'/>"
+						)/*.$("#width",function(winput){
+							winput.onchange=function(){
+								resizer.$("#height").value=this.value;
+							};
+						})*/.$("#submit",function(submit){
+							submit.onclick=function(){
+								pe.undoable();
+								pe.ocanvas.width=resizer.$("#width").value;
+								pe.ocanvas.height=resizer.$("#height").value;
+								pe.canvas.width=pe.ocanvas.width*3;
+								pe.canvas.height=pe.ocanvas.height*3;
+								pe.canvas.style.width=pe.ocanvas.width*pe.view.scale+"px";
+								pe.canvas.style.height=pe.ocanvas.height*pe.view.scale+"px";
+								pe.octx.drawImage(pe.img,0,0);
+								//pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
+								//pe.redraw(true,true);
+								pe.mousewheel();
+								resizer.close();
+								resizer=null;
+							};
+						});
+				}
+			};
+		});
 	pe.tools=["Paint","45","Spray","Fill","Replace Color","Select","Tile"];
 	var toolOnClick=function(){
 		pe.tool=this.tool;
