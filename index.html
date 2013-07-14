@@ -12,11 +12,12 @@
 			    image-rendering: -o-crisp-edges;
 			    image-rendering: optimize-contrast;
 			}
-			canvas,body,html,#gui-overlay,canvas{
+			canvas,body,html,#gui-overlay{
 				-webkit-user-select: none;
 				-moz-user-select: none;
 				-ms-user-select: none;
 				user-select: none;
+				overflow: hidden;
 			}
 			.tool:hover,.color:hover{
 				box-shadow: 0 0 2px 1px rgba(0,0,0,0.4) inset, 0 0 1px 3px rgba(255,255,255,0.4) inset;
@@ -24,16 +25,20 @@
 			.selected{
 				box-shadow: 0 0 2px 1px black inset, 0 0 1px 3px white inset !important;
 			}
-			.asset *{
+			.asset, .asset *{
 				cursor: pointer !important;
 			}
 			.asset{
 				color: rgba(255,255,255,0.7) !important;
 				border: 1px solid rgba(255,255,255,0.00) !important;
+				padding: 3px;
 			}
 			.asset:hover{
 				color: rgba(255,255,255,0.99) !important;
 				border: 1px solid rgba(255,255,255,0.99) !important;
+			}
+			.asset canvas{
+				margin-right: 10px;
 			}
 			.asset label{
 				display: block;
