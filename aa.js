@@ -86,7 +86,7 @@ ArtAssets = function(mainctx, allloaded, update){
 		}
 	};
 	//x.open("POST","upload.py");
-	x.open("GET","listcontent.py");
+	x.open("GET","list-content.py");
 	x.send();
 	
 };
