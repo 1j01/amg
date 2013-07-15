@@ -274,24 +274,23 @@ PixelEditor = function(gui, img, update){
 				var x=pe.octx;
 				if(pe.tool==="Paint"){
 					x.fillStyle=pe.color;
+					var mx0=pe.m.mouse.prev.prev.x,my0=pe.m.mouse.prev.prev.y;
 					var mx1=pe.m.mouse.prev.x,my1=pe.m.mouse.prev.y;
 					var mx2=pe.m.mouse.x,my2=pe.m.mouse.y;
 					//console.log(mx2,my2);
 					//var dir=Math.atan2()
 					//var speed=Math.sqrt((mx1-mx2)*(mx1-mx2)+(my1-my2)*(my1-my2));
-					var vx=(mx1-mx2)/5;
-					var vy=(my1-my2)/5;
+					//var vx=(mx1-mx2)/5;
+					//var vy=(my1-my2)/5;
 					
-					for(
-						var _x=mx1, _y=my1;
-						
-						Math.abs(_x-mx2)>0 ||
-						Math.abs(_y-my2)>0;
-						
-						_x+=Math.max(-1,Math.min(1,mx2-_x)),
-						_y+=Math.max(-1,Math.min(1,my2-_y))
-					){
-							x.fillRect(_x|0,_y|0,1,1);
+					for(var t=0;t<1;t+=0.01){
+						var x0=(mx1-mx0)*t+mx0, y0=(my1-my0)*t+my0;
+						var x1=(mx2-mx1)*t+mx1, y1=(my2-my1)*t+my1;
+						//var _x=(x0-x1)*t+x1, _y=(y0-y1)*t+y1;
+						var i=window.I||Math.random();
+						//var i=Math.sin(i);
+						var _x=(x1-x0)*i+x0, _y=(y1-y0)*i+y0;
+						x.fillRect(_x|0,_y|0,1,1);
 					}
 					//x.fillRect(_x|0,_y|0,1,1);
 					//x.fillRect(mx2|0,my2|0,1,1);
