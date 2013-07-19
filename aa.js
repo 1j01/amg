@@ -55,29 +55,29 @@ ArtAssets = function(mainctx, allloaded, update){
 	//.replace(/content\/art\//,"")
 	
 	aa.loaded=0;
-	aa.nImages=100000000;
+	aa.total=100000000;
 	var x=new XMLHttpRequest();
 	x.onreadystatechange=function(){
 		if(x.readyState===4){
 			var contents=x.responseText.split("\n");
-			aa.nImages=0;
+			aa.total=0;
 			for(var i=0;i<contents.length;i++){
 				var c=contents[i];
 				if(c.match(/\.png/)){
-					aa.nImages++;
+					aa.total++;
 					var img=new Image();
 					img.onload=imgOnLoad;
 					img.onerror=imgOnError;
 					img.src=c;
-					img.fname=c.replace(/content\/art\//,"");
+					//img.fname=c.replace(/content\/art\//,"");
 					aa.images[c]=img;
 				}
 			}
 		}
 		function imgOnLoad(){
 			aa.loaded++;
-			aa.progress=aa.loaded/aa.nImages;
-			if(aa.loaded===aa.nImages){
+			aa.progress=aa.loaded/aa.total;
+			if(aa.loaded===aa.total){
 				allloaded();
 			}
 		}
