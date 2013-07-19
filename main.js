@@ -10,12 +10,18 @@
 	var aa = new ArtAssets(mainctx, whenceBeAssetsLoaded, whenceAnUpdateDothForsooth);
 	var am = new ArtManager(aa, gui);
 	
-	var u = new Universe(mainctx);
-	var room = new Room("starting area",70,50,aa);
-	u.addRoom(room);
-	
-	var le = new LevelEditor(u, mainctx);
-	var game = new Game(u, mainctx);
+	try {
+		var u = new Universe(mainctx);
+		var room = new Room("starting area",5,5,37,25,aa);
+		u.addRoom(room);
+		var room2 = new Room("small area",48,17,10,20,aa);
+		u.addRoom(room2);
+		
+		var le = new LevelEditor(u, mainctx);
+		var game = new Game(u, mainctx);
+	} catch(e){
+		gui.M().title("Something didn't work!").content(e.message).position("bottom");
+	}
 	
 	function whenceBeAssetsLoaded(){
 		console.log("Assets loaded.");

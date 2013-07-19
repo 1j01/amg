@@ -2,10 +2,12 @@
 // Contains rooms.
 // #persistant
 Universe = function(mainctx){
+	var TS=16;
 	var u=this;
 	u.rooms = {};
 	u.addRoom = function(room){
 		u.rooms[room.name] = room;
+		room.redraw();
 	};
 	u.getState = function(){
 		//serialize
@@ -20,14 +22,14 @@ Universe = function(mainctx){
 		return s;
 	};
 	var pat=document.createElement("canvas");
-	pat.width=16;
-	pat.height=16;
+	pat.width=TS;
+	pat.height=TS;
 	
 	var patctx=pat.getContext("2d");
 	patctx.fillStyle="#222";
-	patctx.fillRect(0,0,16,16);
+	patctx.fillRect(0,0,TS,TS);
 	patctx.fillStyle="#555";
-	patctx.fillRect(8,8,1,1);
+	patctx.fillRect(TS/2,TS/2,1,1);
 	u.pat=mainctx.createPattern(pat,"repeat");
 	
 	u.update=function(){
@@ -35,7 +37,15 @@ Universe = function(mainctx){
 		mainctx.rect(0,0,mainctx.canvas.width,mainctx.canvas.height);
 		mainctx.fillStyle=u.pat;
 		mainctx.fill();
+		mainctx.save();
 		
-		
+		for(var name in u.rooms){
+			var room=u.rooms[name];
+			mainctx.save();
+			mainctx.translate(room.x*TS,room.y*TS);
+			room.draw(mainctx);
+			mainctx.restore();
+		}
+		mainctx.restore();
 	};
 };

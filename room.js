@@ -1,36 +1,50 @@
 
-Room = function(name, w,h, aa){
+Room = function(name, x,y,w,h, aa){
 	const TS = 16;
+	var r=this;
 	
-	this.name = name;
-	this.canvas = document.createElement("canvas");
-	this.ctx = this.canvas.getContext("2d");
-	this.width = w;
-	this.height = h;
-	this.rows = [];
-	for(var i=0;i<this.height;i++){
+	r.name = name;
+	r.canvas = document.createElement("canvas");
+	r.ctx = r.canvas.getContext("2d");
+	r.x = x;
+	r.y = y;
+	r.width = w;
+	r.height = h;
+	resizeCanvas();
+	
+	r.rows = [];
+	for(var i=0;i<=r.height;i++){
 		var row=[];
-		for(var j=0;j<this.width;j++){
-			row.push({});
+		for(var j=0;j<=r.width;j++){
+			row.push(0);
 		}
-		this.rows.push(row);
+		r.rows.push(row);
 	}
-	
-	this.redraw = function(){
-		this.redrawRegion(0,0,this.width,this.height);
+	///console.log(r.rows);
+	function resizeCanvas(){
+		r.canvas.width = r.width * TS;
+		r.canvas.height = r.height * TS;
+	}
+	r.redraw = function(){
+		r.redrawRegion(0,0,r.width,r.height);
 	};
-	this.redrawRegion = function(x,y,w,h){
-		this.ctx.clearRect(x*TS,y*TS,w*TS,h*TS);
-		for(var xi=x;xi<xi+w;xi++){
-			for(var yi=y;yi<yi+h;yi++){
-				var b=this.rows[yi][xi];
+	r.redrawRegion = function(x,y,w,h){
+		r.ctx.fillStyle="#111";
+		r.ctx.fillRect(x*TS,y*TS,w*TS,h*TS);
+		for(var xi=x;xi<x+w;xi++){
+			for(var yi=y;yi<y+h;yi++){
+				//console.log(r.rows[yi],yi);
+				var b=r.rows[yi][xi];
 				if(!b){
-					this.ctx.fillStyle="rgba(255,255,255,"+Math.random()+")";
-					this.ctx.fillRect(xi*TS+TS/4,yi*TS/4,TS/2,TS/2);
-					continue;
+					r.ctx.fillStyle="rgba(9,55,55,"+Math.random()+")";
+					r.ctx.fillRect(xi*TS+TS/4,yi*TS+TS/4,TS/2,TS/2);
+				}else{
+					r.ctx.drawImage(b.sprite,xi*TS,yi*TS);
 				}
-				this.ctx.drawImage(b.sprite);
 			}
 		}
+	};
+	r.draw = function(ctx){
+		ctx.drawImage(r.canvas,0,0);
 	};
 };
