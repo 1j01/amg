@@ -308,7 +308,7 @@ PixelEditor = function(gui, img, update){
 						_x+=Math.max(-1,Math.min(1,mx2-_x)),
 						_y+=Math.max(-1,Math.min(1,my2-_y))
 					){
-							x.fillRect(_x|0,_y|0,1,1);
+						x.fillRect(_x|0,_y|0,1,1);
 					}
 				}else if(pe.tool==="Spray"){
 					x.fillStyle=pe.color;
@@ -319,13 +319,14 @@ PixelEditor = function(gui, img, update){
 						
 						(	Math.abs(_x-mx2)>1 ||
 							Math.abs(_y-my2)>1
-						)	&& (i++);
+						)	&& (_i++);
 						
 						_x+=Math.max(-1,Math.min(1,mx2-_x)),
 						_y+=Math.max(-1,Math.min(1,my2-_y))
 					){
-							x.fillRect((Math.random()*10-5+_x)|0,(Math.random()*10-5+_y)|0,1,1);
+						x.fillRect((Math.random()*10-5+_x)|0,(Math.random()*10-5+_y)|0,1,1);
 					}
+					
 				}
 			
 				pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);

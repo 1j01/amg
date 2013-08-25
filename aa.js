@@ -4,20 +4,22 @@
  
 ArtAssets = function(mainctx, allloaded, update){
 	var aa=this;
-	aa.progress=0;
-	aa.progress_l=0;
+	
 	aa.images={};
 	aa.dir="content/art/";
-// splitting tilesets into tiles is unnecessary. drawImage supports clipping.
-// maybe add a helper function to lookup image and draw clipped?
+	
+	aa.loaded=0;
+	aa.total=100000000;
+	aa.progress=0;
+	aa.progress_l=0;
+// splitting tilesets into tiles is unnecessary: drawImage supports clipping.
+// maybe add a helper function to lookup image and draw clipped? meh that can be implemented in Block or something. maybe
 	
 	aa.getImage=function(name){
 		name=aa.dir+name;
-		if(aa.images[name]){
-			return aa.images[name];
-		}else{
-			console.error("no image!");
-		}
+		return aa.images[name]
+			|| aa.images[name+".png"]
+			|| console.error("no image '"+name+"'!");
 	};
 	
 	//should reuse ajax code
@@ -53,24 +55,34 @@ ArtAssets = function(mainctx, allloaded, update){
 		return fname||name;//idk||update_later
 	};
 	//.replace(/content\/art\//,"")
-	
-	aa.loaded=0;
-	aa.total=100000000;
+	aa.drawProgress = function(ctx){
+		aa.progress_l+=(aa.progess-aa.progress_l)/100;
+		if(aa.progress_l<1){
+			var w=ctx.canvas.width;
+			var h=ctx.canvas.height;
+			ctx.fillStyle="rgba(255,255,255,0.6)";
+			ctx.fillRect((w-500)/2,(h-50)/2,500,50);
+			ctx.fillStyle="rgba(0,0,0,0.8)";
+			ctx.fillRect((w-490)/2,(h-40)/2,490,40);
+			ctx.fillStyle="rgba(255,255,255,0.8)";
+			ctx.fillRect((w-480)/2,(h-30)/2,480*aa.progress_l,30);
+		}
+	};
 	var x=new XMLHttpRequest();
 	x.onreadystatechange=function(){
 		if(x.readyState===4){
-			var contents=x.responseText.split("\n");
+			var fnames=x.responseText.split("\n");
 			aa.total=0;
-			for(var i=0;i<contents.length;i++){
-				var c=contents[i];
-				if(c.match(/\.png/)){
+			for(var i=0;i<fnames.length;i++){
+				var f=fnames[i];
+				if(f.match(/\.png/)){
 					aa.total++;
 					var img=new Image();
 					img.onload=imgOnLoad;
 					img.onerror=imgOnError;
-					img.src=c;
-					//img.fname=c.replace(/content\/art\//,"");
-					aa.images[c]=img;
+					img.src=f;
+					//img.fname=f.replace(/content\/art\//,"");
+					aa.images[f]=img;
 				}
 			}
 		}

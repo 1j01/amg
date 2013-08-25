@@ -2,7 +2,6 @@
 // Contains rooms.
 // #persistant
 Universe = function(mainctx){
-	var TS=16;
 	var u=this;
 	u.rooms = {};
 	u.addRoom = function(room){
@@ -29,7 +28,7 @@ Universe = function(mainctx){
 	patctx.fillStyle="#222";
 	patctx.fillRect(0,0,TS,TS);
 	patctx.fillStyle="#555";
-	patctx.fillRect(TS/2,TS/2,1,1);
+	patctx.fillRect(TS/2,TS/2,2,2);
 	u.pat=mainctx.createPattern(pat,"repeat");
 	
 	u.update=function(){

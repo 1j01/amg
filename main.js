@@ -1,3 +1,6 @@
+
+const TS = 32;
+
 //(function(_main_){
 	var canvas = document.querySelector("canvas");
 	var mainctx = canvas.getContext("2d");
@@ -10,22 +13,26 @@
 	var aa = new ArtAssets(mainctx, whenceBeAssetsLoaded, whenceAnUpdateDothForsooth);
 	var am = new ArtManager(aa, gui);
 	
-	try {
-		var u = new Universe(mainctx);
-		var room = new Room("starting area",5,5,37,25,aa);
-		u.addRoom(room);
-		var room2 = new Room("small area",48,17,10,20,aa);
-		u.addRoom(room2);
-		
-		var le = new LevelEditor(u, mainctx);
-		var game = new Game(u, mainctx);
-	} catch(e){
-		gui.M().title("Something didn't work!").content(e.message).position("bottom");
-	}
+	var u, le, game;
 	
 	function whenceBeAssetsLoaded(){
 		console.log("Assets loaded.");
 		am.update();
+		try {
+			u = new Universe(mainctx);
+			var room = new Room("starting area",2,2,38/2,24/2,aa);
+			room.rows[6][5]={
+				sprite: "platformertiles",
+				spriteX: 3, spriteY:0
+			};
+			u.addRoom(room);
+			var room2 = new Room("small area",48/2,14/2,10/2,20/2,aa);
+			u.addRoom(room2);
+			le = new LevelEditor(u, mainctx);
+			game = new Game(u, mainctx);
+		} catch(e){
+			gui.M().title("Something didn't work!").content(e.message).position("bottom");
+		}
 	}
 	function whenceAnUpdateDothForsooth(){
 		am.update();
@@ -46,22 +53,12 @@
 		mainctx.clearRect(0,0,canvas.width,canvas.height);
 		
 		
-		u.update(mainctx);
+		if(u)u.update(mainctx);
 		/*
 		le.update(editing);
 		game.update(editing);
 		*/
-		
-		if(aa.progress<1){
-			var w=canvas.width;
-			var h=canvas.height;
-			mainctx.fillStyle="rgba(255,255,255,0.6)";
-			mainctx.fillRect((w-500)/2,(h-50)/2,500,50);
-			mainctx.fillStyle="rgba(0,0,0,0.8)";
-			mainctx.fillRect((w-490)/2,(h-40)/2,490,40);
-			mainctx.fillStyle="rgba(255,255,255,0.8)";
-			mainctx.fillRect((w-480)/2,(h-30)/2,480*aa.progress,30);
-		}
+		aa.drawProgress(mainctx);
 	}
 	
 	var mainScreen = null;
@@ -79,8 +76,9 @@
 				};
 			}).$("#open-pixel-editor",function($e){
 				$e.onclick = function(e){
-					new PixelEditor(gui,null,function(){
-						console.log("THIS ITS DEAD");
+					new PixelEditor(gui,null,function(img){
+						console.log("~update(img){ window.unsaved = img.src; }()");
+						window.unsaved = img.src;
 					});
 				};
 			}).$("#about",function($e){
