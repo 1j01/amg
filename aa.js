@@ -56,16 +56,21 @@ ArtAssets = function(mainctx, allloaded, update){
 	};
 	//.replace(/content\/art\//,"")
 	aa.drawProgress = function(ctx){
-		aa.progress_l+=(aa.progess-aa.progress_l)/100;
-		if(aa.progress_l<1){
+		//console.log(aa.progress, aa.progress_l);
+		aa.progress_l+=(aa.progress-aa.progress_l)/10;
+		if(aa.progress_l<0.99999){
 			var w=ctx.canvas.width;
 			var h=ctx.canvas.height;
-			ctx.fillStyle="rgba(255,255,255,0.6)";
+			var a = Math.max(0,Math.min((0.9-aa.progress_l)*5,1));
+			console.log(a);
+			//ctx.globalAlpha = a;
+			ctx.fillStyle="rgba(255,255,255,"+(0.6*a)+")";
 			ctx.fillRect((w-500)/2,(h-50)/2,500,50);
-			ctx.fillStyle="rgba(0,0,0,0.8)";
+			ctx.fillStyle="rgba(0,0,0,"+(2.8*a)+")";
 			ctx.fillRect((w-490)/2,(h-40)/2,490,40);
-			ctx.fillStyle="rgba(255,255,255,0.8)";
+			ctx.fillStyle="rgba(255,255,255,"+(0.8*a)+")";
 			ctx.fillRect((w-480)/2,(h-30)/2,480*aa.progress_l,30);
+			//ctx.globalAlpha = 1;
 		}
 	};
 	var x=new XMLHttpRequest();
