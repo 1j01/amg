@@ -1,7 +1,7 @@
 
 /// It's a pixel editor.
 // #disposable
-PixelEditor = function(gui, img, update){
+PixelEditor = function(gui, img, update, save){
 	var pe = this;
 	somePixelEditor = pe;
 	
@@ -373,6 +373,9 @@ PixelEditor = function(gui, img, update){
 					pe.undoable();
 					console.log(e.clipboard,e);
 				break;
+				case "S"://save (+shift=save as)
+					e.ctrlKey && save(pe.img, e.shiftKey);
+				break;
 			}
 			//if(String.fromCharCode(e.keyCode).toUpperCase()==="A"){
 			//	return false;
@@ -551,6 +554,7 @@ PixelEditor = function(gui, img, update){
 		}
 		return true;
 	};
+	pe.m.focus();
 };
 
 /*

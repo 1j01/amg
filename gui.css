@@ -57,9 +57,14 @@
     color: white;
     opacity: 0.8;
     outline: 1px solid rgba(255,255,255,0.4);
-    no-outline-offset: 4px;
-    no-box-shadow: 0 0 1px 4px rgba(0,0,0,0.5);
+    -no-outline-offset: 4px;
+    -no-box-shadow: 0 0 1px 4px rgba(0,0,0,0.5);
     padding: 4px;
+    border-radius: 4px;
+    box-shadow: 0 0 3pt 2pt rgba(255,0,0,0.4);
+}
+.modal.active {
+    box-shadow: 0 0 3pt 2pt red;
 }
 .modal:hover, .modal.dragging {
     opacity: 1;

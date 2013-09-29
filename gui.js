@@ -40,10 +40,17 @@ function Modal(_gui){
 	var windowMouseMove=function(e){m.position(e.clientX-m.ox,e.clientY-m.oy);};
 	var bringToFront=function(e){
 		m.$m.style.zIndex=++gui.z;
-		if(gui.active)gui.active.isActive=false;
+		if(gui.active){
+			gui.active.isActive=false
+			gui.active.$m.classList.remove("active");
+		}
 		gui.active=m.onactivate?m.onactivate():m;
+		gui.active.$m.classList.add("active");
 		gui.active.isActive=true;
-	}; bringToFront();
+	}; 
+	bringToFront();
+	m.focus = bringToFront;
+	
 	var prevent=function(e){
 		e.preventDefault();
 	};
@@ -60,13 +67,13 @@ function Modal(_gui){
 	var tbMouseDown=function(e){
 		if(e.button!==0)return;
 		e.preventDefault();
-		m.$m.className=(m.className+" modal dragging").trim();
+		m.$m.className=(m.className+" modal dragging"+(m.isActive?" active":"")).trim();
 		m.ox=e.clientX-m.$m.offsetLeft;
 		m.oy=e.clientY-m.$m.offsetTop;
 		addEventListener('mousemove', windowMouseMove, true);
 	};
 	var mouseUp=function(e){
-		m.$m.className=(m.className+" modal").trim();
+		m.$m.className=(m.className+" modal"+(m.isActive?" active":"")).trim();
 		m.ox=0;
 		m.oy=0;
 		removeEventListener('mousemove', windowMouseMove, true);

@@ -38,6 +38,8 @@ ArtManager = function(aa, gui){
 					new PixelEditor(gui, aa.images[iname], function(img){
 						aa.images[iname]=img;
 						am.update();
+					}, function(img, shiftKey){
+						window.open(img.src);
 					});
 				};
 			})(i);
