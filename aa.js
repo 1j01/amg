@@ -109,8 +109,7 @@ ArtAssets = function(mainctx, allloaded, update){
 		}
 	};
 	x.onerror = function(){
-		console.error(x.status);
-		console.error(x.responseText);
+		aa.failness = 1;
 	};
 	//x.open("POST","upload.py");
 	x.open("GET","list-content.py");
