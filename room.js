@@ -28,7 +28,7 @@ Room = function(name, x,y,w,h, aa){
 		r.gcanvas.width = r.width * TS;
 		r.gcanvas.height = r.height * TS;
 	}
-	r.redraw = function(){
+	/*r.redraw = function(){
 		r.redrawRegion(0,0,r.width,r.height);
 	};
 	r.redrawRegion = function(x,y,w,h){
@@ -50,5 +50,21 @@ Room = function(name, x,y,w,h, aa){
 		ctx.fillStyle="#222";
 		ctx.fillRect(0,0,r.width*TS,r.height*TS);
 		ctx.drawImage(r.gcanvas,0,0);
+	};*/
+	r.draw = function(ctx){
+		ctx.fillStyle="#222";
+		ctx.fillRect(0,0,r.width*TS,r.height*TS);
+		for(var xi=0;xi<r.width;xi++){
+			for(var yi=0;yi<r.height;yi++){
+				//console.log(r.rows[yi],yi);
+				var b=r.rows[yi][xi];
+				if(!b){
+					ctx.fillStyle="rgba(9,55,55,"+Math.random()+")";
+					ctx.fillRect(xi*TS+TS/4,yi*TS+TS/4,TS/2,TS/2);
+				}else{
+					ctx.drawImage(aa.getImage(b.sprite),b.spriteX*TS,b.spriteY*TS,TS,TS,xi*TS,yi*TS,TS,TS);
+				}
+			}
+		}
 	};
 };

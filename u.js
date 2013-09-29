@@ -6,7 +6,7 @@ Universe = function(mainctx){
 	u.rooms = {};
 	u.addRoom = function(room){
 		u.rooms[room.name] = room;
-		room.redraw();
+		//room.redraw();
 	};
 	u.getState = function(){
 		//serialize
