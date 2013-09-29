@@ -8,10 +8,13 @@ ArtAssets = function(mainctx, allloaded, update){
 	aa.images={};
 	aa.dir="content/art/";
 	
-	aa.loaded=0;
 	aa.total=100000000;
+	aa.loaded=0;
 	aa.progress=0;
 	aa.progress_l=0;
+	aa.errored=0;
+	aa.failness=0;
+	aa.failness_l=0;
 // splitting tilesets into tiles is unnecessary: drawImage supports clipping.
 // maybe add a helper function to lookup image and draw clipped? meh that can be implemented in Block or something. maybe
 	
@@ -22,11 +25,11 @@ ArtAssets = function(mainctx, allloaded, update){
 			|| console.error("no image '"+name+"'!");
 	};
 	
-	//should reuse ajax code
+	//should reuse ajax code?
 	aa.uploadImage=function(name){
 		var img=aa.getImage(name);
 		if(!img.src.match(/^data:/)){
-			console.log("uploadImage: image not modified.");
+			console.log("aa.uploadImage: image not modified.");
 			return;
 		}
 		var form=new FormData();
@@ -58,11 +61,11 @@ ArtAssets = function(mainctx, allloaded, update){
 	aa.drawProgress = function(ctx){
 		//console.log(aa.progress, aa.progress_l);
 		aa.progress_l+=(aa.progress-aa.progress_l)/10;
+		aa.failness_l+=(aa.failness-aa.failness_l)/10;
 		if(aa.progress_l<0.99999){
 			var w=ctx.canvas.width;
 			var h=ctx.canvas.height;
 			var a = Math.max(0,Math.min((0.9-aa.progress_l)*5,1));
-			console.log(a);
 			//ctx.globalAlpha = a;
 			ctx.fillStyle="rgba(255,255,255,"+(0.6*a)+")";
 			ctx.fillRect((w-500)/2,(h-50)/2,500,50);
@@ -70,6 +73,8 @@ ArtAssets = function(mainctx, allloaded, update){
 			ctx.fillRect((w-490)/2,(h-40)/2,490,40);
 			ctx.fillStyle="rgba(255,255,255,"+(0.8*a)+")";
 			ctx.fillRect((w-480)/2,(h-30)/2,480*aa.progress_l,30);
+			ctx.fillStyle="rgba(255,0,0,"+(0.8*a*Math.random())+")";
+			ctx.fillRect((w-480)/2+480*aa.progress_l+6,(h-30)/2,(480-6*2)*aa.failness_l,30);
 			//ctx.globalAlpha = 1;
 		}
 	};
@@ -99,8 +104,13 @@ ArtAssets = function(mainctx, allloaded, update){
 			}
 		}
 		function imgOnError(){
-			console.error(this.src,"failed to load.");
+			aa.errored++;
+			aa.failness=aa.errored/aa.total;
 		}
+	};
+	x.onerror = function(){
+		console.error(x.status);
+		console.error(x.responseText);
 	};
 	//x.open("POST","upload.py");
 	x.open("GET","list-content.py");
