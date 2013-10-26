@@ -50,17 +50,43 @@
 			.modal .content {
 				background: rgba(0,0,0,0.1) !important;
 			}
+			.onerror {
+				position: absolute;
+				left: 0; right: 0;
+				top: 0; bottom: 0;
+				
+				padding: 5px;
+				
+				background: rgba(255,0,0,0.5);
+				color: white;
+			}
+			a { /* most <a>s will probably be on a dark bg */
+				cursor: pointer !important;
+				color: #CCC;
+			} a:hover {
+				color: #DDD;
+			} a:active {
+				color: #AAA;
+			}
 		</style>
 		<link rel="stylesheet" type="text/css" href="gui.css">
 	</head>
 	<body>
-		<script>onerror=function(err,url,line){document.body.style.background="red"};</script>
+		<script>
+			var _$errs=document.createElement("div");
+			_$errs.className = "onerror";
+			onerror=function(err,url,line){
+				_$errs.innerHTML+="<a href='"+url+"'>"+url+"</a>, line "+line+"<br><p>"+err+"</p><hr>";
+				document.body.appendChild(_$errs);
+			}
+		</script>
 		
 		<canvas id="main"/>
 		
 		<script src="aa.js"></script>
 		<script src="am.js"></script>
 		<script src="pe.js"></script>
+		<script src="be.js"></script>
 		
 		<script src="room.js"></script>
 		<script src="u.js"></script>
