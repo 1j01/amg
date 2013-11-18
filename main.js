@@ -45,8 +45,7 @@ TS = 32;
 		};
 		req(animate);
 	}else{
-		console.log("Wow, no requestAnimationFrame? Lamesauce.");
-		setTimeout(step,10);
+		setInterval(step,1000/60);
 	}
 	
 	function step(){
