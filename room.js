@@ -14,9 +14,9 @@ Room = function(name, x,y,w,h, aa){
 	resizeCanvas();
 	
 	r.rows = [];
-	for(var i=0;i<=r.height;i++){
+	for(var i=0;i<r.height;i++){
 		var row=[];
-		for(var j=0;j<=r.width;j++){
+		for(var j=0;j<r.width;j++){
 			row.push(0);
 		}
 		r.rows.push(row);

@@ -19,9 +19,9 @@ ArtAssets = function(mainctx, allloaded, update){
 // maybe add a helper function to lookup image and draw clipped? meh that can be implemented in Block or something. maybe
 	
 	aa.getImage=function(name){
-		name=aa.dir+name;
 		return aa.images[name]
-			|| aa.images[name+".png"]
+			|| aa.images[aa.dir+name]
+			|| aa.images[aa.dir+name+".png"]
 			|| console.error("no image '"+name+"'!");
 	};
 	

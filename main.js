@@ -14,6 +14,7 @@ TS = 32;
 	
 	var aa = new ArtAssets(mainctx, whenceBeAssetsLoaded, whenceAnUpdateDothForsooth);
 	var am = new ArtManager(aa, gui);
+	var tileselector;
 	
 	function whenceAnUpdateDothForsooth(){
 		am.update();
@@ -33,6 +34,7 @@ TS = 32;
 			u.addRoom(room2);
 			le = new LevelEditor(u, mainctx);
 			game = new Game(u, mainctx);
+			tileselector = new TileSelector(le, aa, gui);
 		}catch(e){
 			gui.M().title("Something didn't work!").content(e.message).position("bottom");
 		}
@@ -55,10 +57,9 @@ TS = 32;
 		
 		
 		if(u)u.update(mainctx);
-		/*
-		le.update(editing);
-		game.update(editing);
-		*/
+		if(le)le.update(editing);
+		//game.update(editing);
+		
 		aa.drawProgress(mainctx);
 	}
 	
@@ -69,11 +70,20 @@ TS = 32;
 		.position("center")
 		.content(
 			"<button id='show-art-manager'>Show Art Asset Manager</button>"+
+		"<br><button id='show-tile-selector'>Show Tile Selector</button>"+
 		"<br><button id='open-pixel-editor'>Open Pixel Editor</button>"+
 		"<br><button id='about'>About</button>"
 		).$("#show-art-manager",function($e){
 			$e.onclick = function(e){
 				am.show();
+			};
+		}).$("#show-tile-selector",function($e){
+			$e.onclick = function(e){
+				if(tileselector){
+					tileselector.show();
+				}else{
+					gui.msg("Loading","Wait for it...");
+				}
 			};
 		}).$("#open-pixel-editor",function($e){
 			$e.onclick = function(e){

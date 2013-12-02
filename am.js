@@ -16,7 +16,7 @@ ArtManager = function(aa, gui){
 	};
 	am.update = function(){
 		if(!am.m)return false;
-		am.m.$c.innerHTML="";
+		am.m.$c.innerHTML="<label><input type='checkbox'/>Levely edit mode?</label>";
 		am.m.$c.style.maxHeight="80vh";
 		am.m.$c.style.minHeight="200px";
 		am.m.$c.style.minWidth="265px";
