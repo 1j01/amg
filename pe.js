@@ -162,39 +162,6 @@ PixelEditor = function(gui, img, update, save){
 				pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);
 				pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
 				
-				function fill(x,y, r,g,b,a, wr,wg,wb,wa, life){
-					if(x<0||y<0||x>=id.width||y>=id.height)return;
-					var i=(x%id.width+y*id.width)*4;
-					
-					if(wr===undefined){
-						var wr=id.data[i+0],wg=id.data[i+1],wb=id.data[i+2],wa=id.data[i+3];
-						console.log("fill within color",wr,wg,wb);
-						console.log("fill with color",r,g,b);
-						if(r==wr&&g==wg&&b==wb&&a==wa){
-							console.log("Already that color.");
-							return false;
-						}
-						var life=650;
-						pe.undoable();
-					}
-					
-					if(id.data[i+3]==wa
-					&& id.data[i+0]==wr
-					&& id.data[i+1]==wg
-					&& id.data[i+2]==wb){
-					   id.data[i+0]=r;
-					   id.data[i+1]=g;
-					   id.data[i+2]=b;
-					   id.data[i+3]=a;
-					}else return;
-					
-					if(--life){
-						if(x<id.width)fill(x+1,y, r,g,b,a, wr,wg,wb,wa, life);
-						if(y<id.height)fill(x,y+1, r,g,b,a, wr,wg,wb,wa, life);
-						if(x>0)fill(x-1,y, r,g,b,a, wr,wg,wb,wa, life);
-						if(y>0)fill(x,y-1, r,g,b,a, wr,wg,wb,wa, life);
-					}
-				}
 			}else if(pe.tool==="Replace Color"){
 				var _x=pe.m.mouse.x,_y=pe.m.mouse.y;
 				var id=pe.octx.getImageData(0,0,pe.canvas.width,pe.canvas.height);
@@ -208,32 +175,68 @@ PixelEditor = function(gui, img, update, save){
 				pe.ctx.clearRect(0,0,pe.canvas.width,pe.canvas.height);
 				pe.ctx.drawImage(pe.ocanvas,0,0,pe.canvas.width,pe.canvas.height);
 				
-				function replaceColor(x,y, r,g,b,a){
-					if(x<0||y<0||x>=id.width||y>=id.height)return;
-					var i=(x%id.width+y*id.width)*4;
-					var wr=id.data[i+0],wg=id.data[i+1],wb=id.data[i+2],wa=id.data[i+3];
-					
-					console.log("replace all",[wr,wg,wb,wa],"with",[r,g,b,a]);
-					if(r==wr&&g==wg&&b==wb&&a==wa){
-						console.log("same color");
-						return;
-					}
-					pe.undoable();
-					
-					for(var i=0;i<id.data.length;i+=4){
-						if(id.data[i+3]==wa
-						&& id.data[i+0]==wr
-						&& id.data[i+1]==wg
-						&& id.data[i+2]==wb){
-						   id.data[i+0]=r;
-						   id.data[i+1]=g;
-						   id.data[i+2]=b;
-						   id.data[i+3]=a;
-						}
-					}
-				}
 			}
 			
+		}
+		
+		function fill(x,y, r,g,b,a, wr,wg,wb,wa, life){
+			if(x<0||y<0||x>=id.width||y>=id.height)return;
+			var i=(x%id.width+y*id.width)*4;
+			
+			if(wr===undefined){
+				wr=id.data[i+0];
+				wg=id.data[i+1];
+				wb=id.data[i+2];
+				wa=id.data[i+3];
+				console.log("fill within color",wr,wg,wb," with color",r,g,b);
+				if(r==wr&&g==wg&&b==wb&&a==wa){
+					console.log("Already that color.");
+					return false;
+				}
+				life=650;
+				pe.undoable();
+			}
+			
+			if(id.data[i+3]==wa
+			&& id.data[i+0]==wr
+			&& id.data[i+1]==wg
+			&& id.data[i+2]==wb){
+			   id.data[i+0]=r;
+			   id.data[i+1]=g;
+			   id.data[i+2]=b;
+			   id.data[i+3]=a;
+			}else return;
+			
+			if(--life){
+				if(x<id.width)fill(x+1,y, r,g,b,a, wr,wg,wb,wa, life);
+				if(y<id.height)fill(x,y+1, r,g,b,a, wr,wg,wb,wa, life);
+				if(x>0)fill(x-1,y, r,g,b,a, wr,wg,wb,wa, life);
+				if(y>0)fill(x,y-1, r,g,b,a, wr,wg,wb,wa, life);
+			}
+		}
+		function replaceColor(x,y, r,g,b,a){
+			if(x<0||y<0||x>=id.width||y>=id.height)return;
+			var i=(x%id.width+y*id.width)*4;
+			var wr=id.data[i+0],wg=id.data[i+1],wb=id.data[i+2],wa=id.data[i+3];
+			
+			console.log("replace all",[wr,wg,wb,wa],"with",[r,g,b,a]);
+			if(r==wr&&g==wg&&b==wb&&a==wa){
+				console.log("same color");
+				return;
+			}
+			pe.undoable();
+			
+			for(var i=0;i<id.data.length;i+=4){
+				if(id.data[i+3]==wa
+				&& id.data[i+0]==wr
+				&& id.data[i+1]==wg
+				&& id.data[i+2]==wb){
+				   id.data[i+0]=r;
+				   id.data[i+1]=g;
+				   id.data[i+2]=b;
+				   id.data[i+3]=a;
+				}
+			}
 		}
 	};
 	pe.mouseup = function(e){
