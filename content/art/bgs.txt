@@ -1,0 +1,9 @@
+wget -O castle.jpg http://www.wallng.com/images/2013/07/fantasy-unique-castle-hd-art-hd-backgrounds.jpg
+wget -O city.jpg http://3.bp.blogspot.com/-TLeLmD7Sgnw/UU7l3lFta6I/AAAAAAAAACo/raQN4VUrqns/s1600/1680x1050_Unique_Wallpaper__009.jpg
+wget -O space.png http://images.wikia.com/dragoncity/images/f/f9/Alien_Invasion_Space_Trip_Game_Background.png
+wget -O deep-city.jpg http://pcbackgroundwallpaper.com/wp-content/gallery/game/backgrounds-desktop-game-great-quality-scenes-wallpapers_for_desktop.jpg
+wget -O mountains.jpg http://fc02.deviantart.net/fs71/f/2012/068/4/1/dark_mountain___game_background_4_by_ranivius-d4s9v22.jpg
+wget -O waterfalls.jpg http://fc03.deviantart.net/fs70/i/2013/269/e/6/the_great_waterfall_by_syntetyc-d6nubgu.jpg
+
+# https://www.google.com/search?tbm=isch&hl=en&source=hp&biw=1366&bih=667&q=game+background&btnG=Search+Images&gbv=2&oq=derp&aq=f&aqi=g10&aql=&gs_l=img.3..0l10.4000.4789.0.5261.4.4.0.0.0.0.48.179.4.4.0...0.0.QlvAFVhPBgs#facrc=_&imgdii=_&imgrc=DYo9aW7wMuZt9M%3A%3BvxUyFUQ7oNNo6M%3Bhttp%253A%252F%252Fwww.gamersbin.com%252Fattachments%252Ff137%252F412d1295198145-post-your-gamer-background-wallpapers-game-scenes-26-.jpg%3Bhttp%253A%252F%252Fhdw.eweb4.com%252Fout%252F628243.html%3B1920%3B1080
+# http://www.spriters-resource.com/game_boy_advance/kirbmirror/sheet/40118/

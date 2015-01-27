@@ -83,6 +83,23 @@ ArtAssets = function(mainctx, allloaded, update){
 		if(x.readyState===4){
 			var fnames=x.responseText.split("\n");
 			aa.total=0;
+			if(fnames[0].match(/^#!/)){
+				// hm, I was kind of hoping for some cgi action here
+				fnames = [
+					"content/art/dawn-gods.png",
+					"content/art/mesa.png",
+					"content/art/mesa_1.png",
+					"content/art/platformertiles-original-palette.png",
+					"content/art/platformertiles.png",
+					"content/art/platshrooms.png",
+					"content/art/bg/castle.jpg",
+					"content/art/bg/city.jpg",
+					"content/art/bg/deep-city.jpg",
+					"content/art/bg/mountains.jpg",
+					"content/art/bg/space.png",
+					"content/art/bg/waterfalls.jpg"
+				];
+			}
 			for(var i=0;i<fnames.length;i++){
 				var f=fnames[i];
 				if(f.match(/\.png/)){
